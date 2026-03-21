@@ -32,10 +32,12 @@ EQUIPMENT: dict[str, Equipment] = {
 }
 
 SHOP_STOCK: dict[int, dict[str, list[str]]] = {
-    1: {"weapons": ["iron_sword", "silver_dagger"],              "armors": ["padded_vest"]},
-    2: {"weapons": ["iron_sword", "silver_dagger","wizard_staff"],"armors": ["padded_vest", "leather_armor"]},
-    3: {"weapons": ["steel_sword", "wizard_staff","arcane_tome"], "armors": ["leather_armor", "chain_mail", "mage_robes"]},
-    4: {"weapons": ["steel_sword", "arcane_tome", "runic_blade"], "armors": ["chain_mail", "mage_robes"]},
+    1: {"weapons": ["iron_sword", "silver_dagger"],               "armors": ["padded_vest"]},
+    2: {"weapons": ["iron_sword", "silver_dagger", "wizard_staff"],"armors": ["padded_vest", "leather_armor"]},
+    3: {"weapons": ["steel_sword", "wizard_staff", "arcane_tome"], "armors": ["leather_armor", "chain_mail", "mage_robes"]},
+    4: {"weapons": ["steel_sword", "arcane_tome", "runic_blade"],  "armors": ["chain_mail", "mage_robes"]},
+    5: {"weapons": ["runic_blade", "arcane_tome", "steel_sword"],  "armors": ["chain_mail", "mage_robes"]},
+    6: {"weapons": ["runic_blade", "arcane_tome", "steel_sword"],  "armors": ["chain_mail", "mage_robes"]},
 }
 
 POTION_SHOP: list[tuple[str, int]] = [

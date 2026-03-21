@@ -8,6 +8,7 @@ class Choice:
     flag: str
     outcome: str
     effect: dict   # keys: atk, defense, magic, max_hp, hp, gold, item, weapon
+    class_only: str = ""  # if set, only shown to this player class
 
 
 @dataclass
@@ -42,6 +43,27 @@ EVENTS: list[StoryEvent] = [
                 outcome="event1_choice3_outcome",
                 effect={"gold": 25, "atk": 3},
             ),
+            Choice(
+                text="event1_warrior_text",
+                flag="warrior_stood_guard",
+                outcome="event1_warrior_outcome",
+                effect={"defense": 4, "max_hp": 10},
+                class_only="Warrior",
+            ),
+            Choice(
+                text="event1_mage_text",
+                flag="mage_healed_prisoner",
+                outcome="event1_mage_outcome",
+                effect={"magic": 3, "max_hp": -5},
+                class_only="Mage",
+            ),
+            Choice(
+                text="event1_rogue_text",
+                flag="rogue_looted_prisoner",
+                outcome="event1_rogue_outcome",
+                effect={"gold": 25, "atk": 2},
+                class_only="Rogue",
+            ),
         ],
     ),
 
@@ -67,6 +89,27 @@ EVENTS: list[StoryEvent] = [
                 flag="looted_village",
                 outcome="event2_choice3_outcome",
                 effect={"gold": 35, "item": "health_potion"},
+            ),
+            Choice(
+                text="event2_warrior_text",
+                flag="warrior_sworn_oath",
+                outcome="event2_warrior_outcome",
+                effect={"max_hp": 15, "atk": 2},
+                class_only="Warrior",
+            ),
+            Choice(
+                text="event2_mage_text",
+                flag="mage_warded_alcove",
+                outcome="event2_mage_outcome",
+                effect={"magic": 5, "max_hp": 5},
+                class_only="Mage",
+            ),
+            Choice(
+                text="event2_rogue_text",
+                flag="rogue_left_supplies",
+                outcome="event2_rogue_outcome",
+                effect={"atk": 4, "defense": 2},
+                class_only="Rogue",
             ),
         ],
     ),
@@ -94,6 +137,27 @@ EVENTS: list[StoryEvent] = [
                 outcome="event3_choice3_outcome",
                 effect={"atk": 4, "magic": 4, "max_hp": 5},
             ),
+            Choice(
+                text="event3_warrior_text",
+                flag="warrior_endured",
+                outcome="event3_warrior_outcome",
+                effect={"atk": 7, "defense": 3, "max_hp": 5},
+                class_only="Warrior",
+            ),
+            Choice(
+                text="event3_mage_text",
+                flag="mage_improved_pact",
+                outcome="event3_mage_outcome",
+                effect={"magic": 9, "atk": 2},
+                class_only="Mage",
+            ),
+            Choice(
+                text="event3_rogue_text",
+                flag="rogue_stole_reagents",
+                outcome="event3_rogue_outcome",
+                effect={"gold": 20, "atk": 3, "magic": 3},
+                class_only="Rogue",
+            ),
         ],
     ),
 
@@ -119,6 +183,121 @@ EVENTS: list[StoryEvent] = [
                 flag="kept_secrets",
                 outcome="event4_choice3_outcome",
                 effect={"max_hp": 15, "defense": 5},
+            ),
+            Choice(
+                text="event4_warrior_text",
+                flag="warrior_tactical",
+                outcome="event4_warrior_outcome",
+                effect={"atk": 9, "defense": 4},
+                class_only="Warrior",
+            ),
+            Choice(
+                text="event4_mage_text",
+                flag="mage_channeled_tome",
+                outcome="event4_mage_outcome",
+                effect={"magic": 13},
+                class_only="Mage",
+            ),
+            Choice(
+                text="event4_rogue_text",
+                flag="rogue_runed_blade",
+                outcome="event4_rogue_outcome",
+                effect={"atk": 7, "magic": 4},
+                class_only="Rogue",
+            ),
+        ],
+    ),
+
+    StoryEvent(
+        floor_after=5,
+        title="event5_title",
+        narrative="event5_narrative",
+        choices=[
+            Choice(
+                text="event5_choice1_text",
+                flag="fought_knight",
+                outcome="event5_choice1_outcome",
+                effect={"hp": -15, "atk": 5},
+            ),
+            Choice(
+                text="event5_choice2_text",
+                flag="redeemed_knight",
+                outcome="event5_choice2_outcome",
+                effect={"max_hp": 15, "defense": 3},
+            ),
+            Choice(
+                text="event5_choice3_text",
+                flag="executed_knight",
+                outcome="event5_choice3_outcome",
+                effect={"gold": 30, "atk": 4},
+            ),
+            Choice(
+                text="event5_warrior_text",
+                flag="warrior_duel",
+                outcome="event5_warrior_outcome",
+                effect={"atk": 6, "defense": 4, "max_hp": 10},
+                class_only="Warrior",
+            ),
+            Choice(
+                text="event5_mage_text",
+                flag="mage_purified",
+                outcome="event5_mage_outcome",
+                effect={"magic": 8, "max_hp": 10},
+                class_only="Mage",
+            ),
+            Choice(
+                text="event5_rogue_text",
+                flag="rogue_sneaked",
+                outcome="event5_rogue_outcome",
+                effect={"atk": 4, "gold": 20, "hp": 10},
+                class_only="Rogue",
+            ),
+        ],
+    ),
+
+    StoryEvent(
+        floor_after=6,
+        title="event6_title",
+        narrative="event6_narrative",
+        choices=[
+            Choice(
+                text="event6_choice1_text",
+                flag="shattered_tear",
+                outcome="event6_choice1_outcome",
+                effect={"atk": 6, "magic": 6},
+            ),
+            Choice(
+                text="event6_choice2_text",
+                flag="kept_tear",
+                outcome="event6_choice2_outcome",
+                effect={"max_hp": 25, "defense": 4},
+            ),
+            Choice(
+                text="event6_choice3_text",
+                flag="drank_tear",
+                outcome="event6_choice3_outcome",
+                effect={"max_hp": -10, "atk": 8, "magic": 8},
+            ),
+            Choice(
+                text="event6_warrior_text",
+                flag="warrior_crushed_tear",
+                outcome="event6_warrior_outcome",
+                effect={"atk": 10, "defense": 5},
+                class_only="Warrior",
+            ),
+            Choice(
+                text="event6_mage_text",
+                flag="mage_absorbed_tear",
+                outcome="event6_mage_outcome",
+                effect={"magic": 14, "max_hp": 5},
+                class_only="Mage",
+            ),
+            Choice(
+                text="event6_rogue_text",
+                flag="rogue_pocketed_tear",
+                outcome="event6_rogue_outcome",
+                effect={"gold": 35, "atk": 5, "magic": 3},
+                class_only="Rogue",
             ),
         ],
     ),
@@ -166,17 +345,43 @@ ENDINGS: dict[str, dict] = {
 # ── Scoring table ─────────────────────────────────────────────────────────────
 
 _SCORES: dict[str, dict[str, int]] = {
-    "true_hero":      {"spared_prisoner": 2, "executed_prisoner": -1, "aided_village": 2,
-                       "looted_village": -2, "refused_dark_pact": 2, "dark_pact": -2,
-                       "bargained_sage": 0},
-    "dark_conqueror": {"executed_prisoner": 2, "looted_village": 2, "dark_pact": 2,
-                       "spared_prisoner": -1, "aided_village": -1, "refused_dark_pact": -2,
-                       "kept_secrets": 1},
-    "scholar_king":   {"bargained_sage": 2, "deciphered_tome": 3, "dark_pact": -1,
-                       "kept_secrets": 1},
-    "martyred_saint": {"sacrificed_self": 5, "spared_prisoner": 1, "aided_village": 1,
-                       "dark_pact": -2, "looted_village": -2},
-    "reluctant_hero": {"ignored_prisoner": 2, "ignored_village": 2},
+    "true_hero": {
+        "spared_prisoner": 2, "executed_prisoner": -1,
+        "aided_village": 2, "looted_village": -2,
+        "refused_dark_pact": 2, "dark_pact": -2,
+        "redeemed_knight": 3, "executed_knight": -1,
+        "kept_tear": 3, "shattered_tear": -1, "drank_tear": -1,
+        "warrior_stood_guard": 1, "mage_healed_prisoner": 1,
+        "warrior_sworn_oath": 1, "mage_warded_alcove": 1,
+        "warrior_duel": 1, "mage_purified": 2,
+    },
+    "dark_conqueror": {
+        "executed_prisoner": 2, "looted_village": 2, "dark_pact": 2,
+        "spared_prisoner": -1, "aided_village": -1, "refused_dark_pact": -2,
+        "kept_secrets": 1,
+        "executed_knight": 2, "fought_knight": 1,
+        "drank_tear": 2, "shattered_tear": 1,
+        "rogue_looted_prisoner": 1, "rogue_stole_reagents": 1, "warrior_tactical": 1,
+    },
+    "scholar_king": {
+        "bargained_sage": 2, "deciphered_tome": 3, "dark_pact": -1,
+        "kept_secrets": 1,
+        "mage_improved_pact": 2, "mage_channeled_tome": 3,
+        "mage_purified": 2, "mage_absorbed_tear": 3,
+        "kept_tear": 1, "redeemed_knight": 1,
+        "mage_healed_prisoner": 1, "mage_warded_alcove": 1,
+    },
+    "martyred_saint": {
+        "sacrificed_self": 5, "spared_prisoner": 1, "aided_village": 1,
+        "dark_pact": -2, "looted_village": -2,
+        "redeemed_knight": 2, "kept_tear": 2,
+        "warrior_sworn_oath": 1, "mage_healed_prisoner": 1,
+        "mage_warded_alcove": 1, "warrior_stood_guard": 1, "mage_purified": 1,
+    },
+    "reluctant_hero": {
+        "ignored_prisoner": 2, "ignored_village": 2,
+        "fought_knight": 2, "rogue_sneaked": 1, "rogue_left_supplies": 1,
+    },
 }
 
 

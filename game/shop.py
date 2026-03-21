@@ -7,7 +7,12 @@ from game.i18n import t
 def run_shop(player: Player, ui) -> None:
     """Run the shop loop for the current floor."""
     floor = getattr(player, "_shop_floor", 1)
-    stock = SHOP_STOCK.get(floor, SHOP_STOCK[1])
+    stock = SHOP_STOCK.get(floor, SHOP_STOCK[4])
+
+    # Merchant refuses to sell weapons to someone who looted the village
+    if player.story_flags.get("looted_village") and stock.get("weapons"):
+        ui.print(f"\n[red]{t('shop_weapons_locked')}[/red]\n")
+        stock = {"weapons": [], "armors": stock.get("armors", [])}
 
     while True:
         ui.clear()

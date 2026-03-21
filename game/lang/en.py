@@ -243,6 +243,190 @@ STRINGS: dict = {
         "You feel steadier for not having looked. +15 max HP, +5 DEF."
     ),
 
+    # Event 1 — class-specific choices
+    "event1_warrior_text": "Stand guard over him until help can find him.",
+    "event1_warrior_outcome": (
+        "You take a knee and draw your shield. Hours pass without movement.\n"
+        "When you finally rise, he's still breathing — steadier now.\n"
+        "The vigil steadied you too. +4 DEF, +10 max HP."
+    ),
+    "event1_mage_text": "Mend his wounds with a healing spell.",
+    "event1_mage_outcome": (
+        "The spell costs more than expected — his injuries run deep.\n"
+        "But his colour returns. He clutches your sleeve: 'The sage ahead. Find her.\n"
+        "She knows things.' +3 Magic. Max HP -5."
+    ),
+    "event1_rogue_text": "Check his belongings quietly while he drifts in and out.",
+    "event1_rogue_outcome": (
+        "He doesn't notice — or chooses not to.\n"
+        "Hidden inside his boot: a coin purse and a worn throwing knife.\n"
+        "You leave without a word. +25 gold, +2 ATK."
+    ),
+
+    # Event 2 — class-specific choices
+    "event2_warrior_text": "Swear on your sword that you'll return for them.",
+    "event2_warrior_outcome": (
+        "The farmer grabs your forearm. 'Hold to that.'\n"
+        "The children look at you like something worth believing in.\n"
+        "The weight settles like a second layer of armour. +15 max HP, +2 ATK."
+    ),
+    "event2_mage_text": "Ward the alcove. Monsters won't notice them.",
+    "event2_mage_outcome": (
+        "The runes seal around the doorframe. The old woman traces them with one finger.\n"
+        "'These are real.' You leave knowing at least this much will hold.\n"
+        "+5 Magic, +5 max HP."
+    ),
+    "event2_rogue_text": "Leave a smoke vial and a few coins. Enough for a chance.",
+    "event2_rogue_outcome": (
+        "You don't linger. The farmer nods once — thanks without debt.\n"
+        "In the dark after, you move lighter. Faster. +4 ATK, +2 DEF."
+    ),
+
+    # Event 3 — class-specific choices
+    "event3_warrior_text": "Propose a test of will. Power through endurance, not pacts.",
+    "event3_warrior_outcome": (
+        "She obliges, grimly. You outlast something that would shatter a lesser mind.\n"
+        "When it ends she looks at you differently. 'Good. That was the real test.'\n"
+        "+7 ATK, +3 DEF, +5 max HP."
+    ),
+    "event3_mage_text": "Debate the theory. There may be a better formulation.",
+    "event3_mage_outcome": (
+        "Two hours of arcane argument. She concedes three of your points.\n"
+        "What you walk away with is not what she offered — it's more precise.\n"
+        "+9 Magic, +2 ATK."
+    ),
+    "event3_rogue_text": "Listen carefully. Help yourself to a few reagents while she talks.",
+    "event3_rogue_outcome": (
+        "She knows. She lets it happen — a test you didn't know you were taking.\n"
+        "'Pragmatic,' she says, with something close to approval.\n"
+        "The reagents burn bright later. +20 gold, +3 ATK, +3 Magic."
+    ),
+
+    # Event 4 — class-specific choices
+    "event4_warrior_text": "Tear out the key pages. Practical battle intelligence.",
+    "event4_warrior_outcome": (
+        "You roll the pages tight and tuck them into your armour.\n"
+        "Attack patterns. Weak points. You won't understand the theory — you don't need to.\n"
+        "+9 ATK, +4 DEF."
+    ),
+    "event4_mage_text": "Channel the tome's resonance directly. Skip the reading.",
+    "event4_mage_outcome": (
+        "White light. Seconds pass. When you look up, you know things you didn't before —\n"
+        "not as words, but as shapes. The shapes of power. +13 Magic."
+    ),
+    "event4_rogue_text": "Copy the key runes onto your blade by torchlight.",
+    "event4_rogue_outcome": (
+        "The runes settle into the metal like they were always there.\n"
+        "You don't know what they mean. They do. +7 ATK, +4 Magic."
+    ),
+
+    # Event 5 — The Corrupted Knight (new, floor 5)
+    "event5_title": "The Corrupted Knight",
+    "event5_narrative": (
+        "A knight in cracked obsidian armour stands between you and the staircase.\n"
+        "His sword is raised — but his eyes are hollow. Royal insignia on the pauldron:\n"
+        "House Valdris. The family that sent their heir to slay the Dragon\n"
+        "twenty years ago. He never came back.\n"
+        "\"...turn... back...\" he grinds out. He does not lower his sword."
+    ),
+    "event5_choice1_text": "Fight your way through him.",
+    "event5_choice1_outcome": (
+        "You clash twice. He's stronger than he looks — you take a hit before you break through.\n"
+        "His sword drops. He doesn't follow. Whatever was left of him accepts it.\n"
+        "+5 ATK. -15 HP."
+    ),
+    "event5_choice2_text": "Speak to what remains of him.",
+    "event5_choice2_outcome": (
+        "You lower your weapon and say his name — House Valdris. Something flickers.\n"
+        "His sword hand shakes. He crumbles to one knee.\n"
+        "'Don't... let it end the same way.' You pass in silence. +15 max HP, +3 DEF."
+    ),
+    "event5_choice3_text": "End it quickly. It's a mercy.",
+    "event5_choice3_outcome": (
+        "One stroke. Clean. He exhales — not in pain, but relief.\n"
+        "In his belt: a coin purse and a knife still sharp. You take them and press on.\n"
+        "+30 gold, +4 ATK."
+    ),
+    "event5_warrior_text": "Recognize a soldier's stance. Challenge him to one last honorable duel.",
+    "event5_warrior_outcome": (
+        "He accepts — the last reflex of a trained fighter.\n"
+        "You meet him blow for blow, honouring the fight even as you end it.\n"
+        "Something settles in you both. +6 ATK, +4 DEF, +10 max HP."
+    ),
+    "event5_mage_text": "Attempt a purification ritual. Whatever curse took him, name it.",
+    "event5_mage_outcome": (
+        "The corruption resists — then fractures. He gasps. The hollow look fades.\n"
+        "He can't move, but he can see you clearly.\n"
+        "'Thank you,' he says. That's enough. +8 Magic, +10 max HP."
+    ),
+    "event5_rogue_text": "Slip through the shadows. He can't fight what he can't see.",
+    "event5_rogue_outcome": (
+        "You're three steps past him before he turns.\n"
+        "He doesn't follow — some instinct tells him the chase isn't worth it.\n"
+        "Easy. Clean. Worth it. +4 ATK, +20 gold, +10 HP."
+    ),
+
+    # Event 6 — The Dragon's Tear (new, floor 6)
+    "event6_title": "The Dragon's Tear",
+    "event6_narrative": (
+        "On the last step before the final door, a single crystalline drop rests on the stone.\n"
+        "Warm to the touch. It glows softly — not with magic, but with something older.\n"
+        "The Dragon shed this here. Not from rage. Not from pain.\n"
+        "A hundred years of captivity can break anything, given enough time.\n"
+        "You pick it up. What you do with it is yours to decide."
+    ),
+    "event6_choice1_text": "Shatter it against your blade. A weapon is a weapon.",
+    "event6_choice1_outcome": (
+        "The drop fractures into the metal with a hiss of light.\n"
+        "Power without sentiment. You'll take it. +6 ATK, +6 Magic."
+    ),
+    "event6_choice2_text": "Hold it close. Some things should stay whole.",
+    "event6_choice2_outcome": (
+        "It warms your palm the entire walk to the door.\n"
+        "You feel steadier than you have since the first floor.\n"
+        "Whatever waits inside, you'll meet it as yourself. +25 max HP, +4 DEF."
+    ),
+    "event6_choice3_text": "Drink it. Let the Dragon's grief become your strength.",
+    "event6_choice3_outcome": (
+        "It burns going down — not like fire, but like memory.\n"
+        "Something vast and old and sad. You understand the Dragon now.\n"
+        "You'll still kill it. +8 ATK, +8 Magic. Max HP -10."
+    ),
+    "event6_warrior_text": "Press it into the grip of your weapon. Let it anchor you.",
+    "event6_warrior_outcome": (
+        "It melts into the metal with a low sound you feel more than hear.\n"
+        "Your grip is steadier than it's ever been. +10 ATK, +5 DEF."
+    ),
+    "event6_mage_text": "Absorb it slowly into your magic core. A perfect conduit.",
+    "event6_mage_outcome": (
+        "The magic in it recognises yours and flows to meet it.\n"
+        "You've never felt your power this clearly. This is what it's supposed to feel like.\n"
+        "+14 Magic, +5 max HP."
+    ),
+    "event6_rogue_text": "Pocket it. A tear from the Dragon — that's worth something.",
+    "event6_rogue_outcome": (
+        "Maybe to a scholar. Maybe to a cult. Maybe just as a reminder.\n"
+        "Either way, it's yours now. +35 gold, +5 ATK, +3 Magic."
+    ),
+
+    # Prisoner return bonus (floor 3, if spared on floor 1)
+    "prisoner_returns": (
+        "The man you saved on the first floor steps from a side passage.\n"
+        "He looks better. Not good — but better.\n"
+        "'I found a back route,' he says. 'Slower, but alive.'\n"
+        "He presses something cold into your hand — a sealed vial and a coin purse.\n"
+        "'You earned it.' Then he's gone."
+    ),
+    "prisoner_gift": "+10 Gold  +5 max HP  +Dragon Tears potion",
+
+    # Shop weapons locked (looted_village consequence)
+    "shop_weapons_locked": (
+        "The merchant's expression hardens as you approach the weapon rack.\n"
+        "\"Word travels in dungeons. I knew the folk from that village.\"\n"
+        "He steps in front of the weapons.\n"
+        "\"Not for you. Take your potions and go.\""
+    ),
+
     # Endings
     "ending_true_hero_title": "The True Hero",
     "ending_true_hero_desc": (

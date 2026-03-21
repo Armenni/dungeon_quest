@@ -27,6 +27,8 @@ class Enemy:
 
 def make_enemy(name: str, floor: int) -> Enemy:
     s = 1 + (floor - 1) * 0.3
+    if name == "Dragon":
+        s = min(s, 2.0)   # scale Dragon for the 7-floor game
     templates: dict[str, tuple] = {
         "Goblin":    (int(30*s), int(8*s),  int(3*s),  10, int(15*s), int(5*s),
                       ["attack", "poison_sting"]),
@@ -38,8 +40,9 @@ def make_enemy(name: str, floor: int) -> Enemy:
                       ["attack", "fireball", "curse"]),
         "Troll":     (int(80*s), int(14*s), int(8*s),  5,  int(35*s), int(12*s),
                       ["attack", "regenerate", "stun_bash"]),
-        "Dragon":    (int(200*s),int(25*s), int(10*s), 8,  200,       50,
-                      ["attack", "fire_breath", "tail_swipe", "toxic_breath", "wing_stun"]),
+        "Dragon":    (int(220*s),int(24*s), 18,        8,  200,       50,
+                      ["attack", "fire_breath", "tail_swipe", "toxic_breath",
+                       "wing_stun", "regenerate"]),
     }
     hp, atk, defense, spd, xp, gold, abilities = templates[name]
     return Enemy(name, hp, hp, atk, defense, spd, xp, gold, abilities)
@@ -61,7 +64,9 @@ FLOOR_ENEMIES: dict[int, list[str]] = {
     2: ["Goblin", "Orc", "Skeleton"],
     3: ["Orc", "Skeleton", "Dark Mage"],
     4: ["Orc", "Dark Mage", "Troll"],
-    5: ["Dragon"],
+    5: ["Dark Mage", "Troll", "Orc"],
+    6: ["Troll", "Dark Mage", "Troll"],
+    7: ["Dragon"],
 }
 
 

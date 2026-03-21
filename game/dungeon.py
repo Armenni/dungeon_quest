@@ -1,4 +1,5 @@
 import random
+from dataclasses import replace as _dc_replace
 from game.player import Player
 from game.enemy import get_random_enemy, make_boss_with_modifiers
 from game.ui import UI
@@ -16,7 +17,7 @@ class Dungeon:
         self.player = player
         self.ui = ui
         self.floor = 1
-        self.max_floors = 5
+        self.max_floors = 7
 
     def run(self):
         self.ui.print(f"\n[bold]{t('welcome', name=self.player.name, cls=self.player.player_class)}[/bold]")
@@ -27,6 +28,8 @@ class Dungeon:
             self.ui.show_floor(self.floor, self.max_floors)
 
             if self.floor == self.max_floors:
+                # Cleanse status effects before boss fight
+                self.player.status_effects = []
                 # Resolve story ending and apply Dragon modifiers
                 self.player.active_ending = resolve_ending(self.player.story_flags)
                 modifier = dict(self.player.active_ending.get("dragon_modifier", {}))
@@ -64,11 +67,19 @@ class Dungeon:
 
             # Between-floor: story event then shop
             self.ui.print(f"\n[bold green]{t('floor_cleared', floor=self.floor)}[/bold green]")
+
+            # Prisoner return bonus (floor 3, spared on floor 1)
+            if self.floor == 3 and self.player.story_flags.get("spared_prisoner"):
+                self._prisoner_return_bonus()
+
             event = get_event(self.floor)
             if event:
                 self.ui.pause(t("story_event_hint"))
-                idx = self.ui.show_story_event(event)
-                choice = event.choices[idx]
+                # Filter to choices valid for this player's class
+                filtered = [c for c in event.choices
+                            if not c.class_only or c.class_only == self.player.player_class]
+                idx = self.ui.show_story_event(_dc_replace(event, choices=filtered))
+                choice = filtered[idx]
                 self.player.story_flags[choice.flag] = True
                 apply_effect(self.player, choice.effect)
                 self.ui.pause()
@@ -200,6 +211,16 @@ class Dungeon:
 
         self.ui.pause()
         return "win"
+
+    # ── Prisoner return bonus ──────────────────────────────────────────────────
+
+    def _prisoner_return_bonus(self):
+        self.ui.print(f"\n[italic dim]{t('prisoner_returns')}[/italic dim]")
+        self.player.gold += 10
+        self.player.apply_bonus(max_hp=5)
+        self.player.inventory.append(ITEMS["elixir_dragon"])
+        self.ui.print(f"[bold cyan]{t('prisoner_gift')}[/bold cyan]")
+        self.ui.pause()
 
     # ── Rest events ────────────────────────────────────────────────────────────
 
