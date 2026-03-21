@@ -1,0 +1,58 @@
+{
+  "combat_log": [],
+  "enemy": null,
+  "floor": 5,
+  "messages": [
+    "You cast Fireball for 86 damage! Enemy is [red]burned[/red]!",
+    "[red]Burn[/red] deals 5 damage!",
+    "Dragon beats its wings, [yellow]disorienting[/yellow] you!",
+    "You are stunned \u2014 lose your turn!",
+    "[red]Burn[/red] deals 5 damage!",
+    "Dragon breathes fire! You are [red]burning[/red]! You take 98 damage!",
+    "[red]Burn[/red] deals 8 damage!",
+    "Used Elixir! Restored 60 HP and 30 MP.",
+    "[red]Burn[/red] deals 5 damage!",
+    "[dim]Burn fades.[/dim]",
+    "Dragon swings its tail! You take 56 damage!",
+    "[red]Burn[/red] deals 8 damage!",
+    "Used Health Potion! Restored 30 HP.",
+    "Dragon swings its tail! You take 56 damage!",
+    "[red]Burn[/red] deals 8 damage!",
+    "[dim]Burn fades.[/dim]",
+    "Used Health Potion! Restored 30 HP.",
+    "Dragon swings its tail! You take 56 damage!",
+    "\nYou have been slain by Dragon.",
+    "Game Over \u2014 Level 4, Floor 5."
+  ],
+  "options": [],
+  "player": {
+    "armor": null,
+    "atk": 17,
+    "class": "Mage",
+    "defense": 15,
+    "flags": [
+      "spared_prisoner",
+      "aided_village",
+      "refused_dark_pact",
+      "deciphered_tome"
+    ],
+    "gold": 54,
+    "hp": "0/165",
+    "inventory": [
+      "Health Potion",
+      "Health Potion",
+      "Health Potion",
+      "Mana Potion",
+      "Health Potion",
+      "Health Potion"
+    ],
+    "level": 4,
+    "magic": 40,
+    "mp": "95/110",
+    "name": "Claude",
+    "statuses": [],
+    "weapon": "Wizard Staff",
+    "xp": "75/168"
+  },
+  "state": "game_over"
+}
