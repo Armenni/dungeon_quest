@@ -48,6 +48,7 @@ def run_shop(player: Player, ui) -> None:
             continue
 
         kind, key, price = items_list[idx]
+        price = int(price * player.shop_discount)
 
         if player.gold < price:
             ui.print(f"[red]{t('not_enough_gold', gold=player.gold)}[/red]")
@@ -62,8 +63,8 @@ def run_shop(player: Player, ui) -> None:
             ui.print(f"[green]{t('bought_item', name=ITEMS[key].name)}[/green]")
         elif kind == "equip":
             eq = EQUIPMENT[key]
-            msg = player.equip(eq)
-            ui.print(f"[green]{msg}[/green]")
+            player.bag.append(eq)
+            ui.print(f"[green]{t('bought_to_bag', name=eq.name)}[/green]")
 
         ui.pause(t("press_enter_shopping"))
 
@@ -78,6 +79,9 @@ def _build_sell_list(player: Player) -> list[tuple[str, any, str, int]]:
         result.append(("weapon", None, player.weapon.name, player.weapon.price // 2))
     if player.armor and player.armor.price > 0:
         result.append(("armor", None, player.armor.name, player.armor.price // 2))
+    for i, eq in enumerate(player.bag):
+        if eq.price > 0:
+            result.append(("bag", i, eq.name, eq.price // 2))
     return result
 
 
@@ -133,9 +137,13 @@ def _run_sell_mode(player: Player, ui) -> bool:
     if kind == "inv":
         player.inventory.pop(ref)
     elif kind == "weapon":
-        player.unequip("weapon")
+        player.weapon = None
+        player._recalc_equipment()
     elif kind == "armor":
-        player.unequip("armor")
+        player.armor = None
+        player._recalc_equipment()
+    elif kind == "bag":
+        player.bag.pop(ref)
 
     ui.print(f"[green]{t('sold_item', name=name, price=price)}[/green]")
     ui.pause(t("press_enter_short"))
@@ -178,16 +186,18 @@ def _show_shop(ui, player: Player, stock: dict, bought_keys: set = None):
 
     items_list = _build_item_list(stock, bought_keys)
     for i, (kind, key, price) in enumerate(items_list, 1):
+        disc_price = int(price * player.shop_discount)
+        price_str = f"{disc_price}g" if disc_price == price else f"[green]{disc_price}g[/green] [dim][strikethrough]{price}g[/strikethrough][/dim]"
         if kind == "item":
             item = ITEMS[key]
-            table.add_row(str(i), item.name, item.description, f"{price}g")
+            table.add_row(str(i), item.name, item.description, price_str)
         else:
             eq = EQUIPMENT[key]
             # Show what bonuses the player would gain vs current gear
             current = player.weapon if eq.slot == "weapon" else player.armor
             bonus_str = _delta_str(eq, current)
             table.add_row(str(i), f"[bold]{eq.name}[/bold] ({eq.slot})",
-                          f"{eq.description}  {bonus_str}", f"{price}g")
+                          f"{eq.description}  {bonus_str}", price_str)
 
     # Current equipment summary
     w_name = player.weapon.name if player.weapon else f"[dim]none[/dim]"
