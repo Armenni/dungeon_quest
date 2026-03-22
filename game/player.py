@@ -61,7 +61,7 @@ class Player:
         if shield:
             self.status_effects.remove(shield)
             damage = damage // 2
-        actual = max(1, damage - self.defense // 2)
+        actual = max(1, damage - self.defense)
         self.hp = max(0, self.hp - actual)
         return actual
 

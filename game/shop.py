@@ -19,7 +19,7 @@ def run_shop(player: Player, ui) -> None:
         _show_shop(ui, player, stock)
         choice = ui.input(t("shop_prompt")).strip().lower()
 
-        if choice == "l":
+        if choice == t("shop_leave_cmd"):
             break
 
         if not choice.isdigit():
@@ -73,9 +73,7 @@ def _show_shop(ui, player: Player, stock: dict):
     from rich.table import Table
     from rich.panel import Panel
     from rich import box
-    from rich.console import Console
-
-    console = Console()
+    from game.ui import console
 
     table = Table(box=box.SIMPLE, show_header=True, header_style="bold yellow")
     table.add_column("#",    style="cyan",  width=3)

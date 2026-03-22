@@ -20,7 +20,7 @@ class Enemy:
         return self.hp > 0
 
     def take_damage(self, damage: int) -> int:
-        actual = max(1, damage - self.defense // 2)
+        actual = max(1, damage - self.defense)
         self.hp = max(0, self.hp - actual)
         return actual
 
@@ -40,6 +40,10 @@ def make_enemy(name: str, floor: int) -> Enemy:
                       ["attack", "fireball", "curse"]),
         "Troll":     (int(80*s), int(14*s), int(8*s),  5,  int(35*s), int(12*s),
                       ["attack", "regenerate", "stun_bash"]),
+        "Wraith":    (int(45*s), int(13*s), int(4*s),  10, int(28*s), int(9*s),
+                      ["attack", "drain_mana", "life_steal"]),
+        "Cultist":   (int(50*s), int(11*s), int(5*s),  11, int(32*s), int(11*s),
+                      ["attack", "dark_ritual", "shadow_bolt"]),
         "Dragon":    (int(220*s),int(24*s), 18,        8,  200,       50,
                       ["attack", "fire_breath", "tail_swipe", "toxic_breath",
                        "wing_stun", "regenerate"]),
@@ -62,10 +66,10 @@ def make_boss_with_modifiers(floor: int, modifier: dict) -> Enemy:
 FLOOR_ENEMIES: dict[int, list[str]] = {
     1: ["Goblin", "Goblin", "Skeleton"],
     2: ["Goblin", "Orc", "Skeleton"],
-    3: ["Orc", "Skeleton", "Dark Mage"],
-    4: ["Orc", "Dark Mage", "Troll"],
-    5: ["Dark Mage", "Troll", "Orc"],
-    6: ["Troll", "Dark Mage", "Troll"],
+    3: ["Orc", "Skeleton", "Dark Mage", "Wraith"],
+    4: ["Orc", "Dark Mage", "Troll", "Wraith"],
+    5: ["Dark Mage", "Troll", "Wraith", "Cultist"],
+    6: ["Troll", "Dark Mage", "Cultist"],
     7: ["Dragon"],
 }
 

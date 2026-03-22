@@ -1,0 +1,17 @@
+{
+  "timestamp": "2026-03-22",
+  "description": "Dragon test baseline for regression detection",
+  "runs_per_class": 20,
+  "total_runs": 60,
+  "summary": {
+    "overall_winrate": 0.65,
+    "class_winrates": {
+      "Warrior": 0.65,
+      "Mage": 0.70,
+      "Rogue": 0.60
+    },
+    "avg_turns_to_victory": 15.2,
+    "avg_dragon_hp_loss_on_defeat_pct": 45
+  },
+  "notes": "Initial baseline established. Adjust thresholds as game evolves."
+}

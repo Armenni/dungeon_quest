@@ -38,6 +38,7 @@ SHOP_STOCK: dict[int, dict[str, list[str]]] = {
     4: {"weapons": ["steel_sword", "arcane_tome", "runic_blade"],  "armors": ["chain_mail", "mage_robes"]},
     5: {"weapons": ["runic_blade", "arcane_tome", "steel_sword"],  "armors": ["chain_mail", "mage_robes"]},
     6: {"weapons": ["runic_blade", "arcane_tome", "steel_sword"],  "armors": ["chain_mail", "mage_robes"]},
+    7: {"weapons": ["runic_blade", "arcane_tome"],                 "armors": ["chain_mail", "mage_robes"]},
 }
 
 POTION_SHOP: list[tuple[str, int]] = [

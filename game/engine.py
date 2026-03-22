@@ -11,6 +11,8 @@ from game.status import consume_stun, tick_statuses
 from game.items import ITEMS
 from game.equipment import EQUIPMENT, SHOP_STOCK, POTION_SHOP
 from game.story import get_event, resolve_ending, apply_effect
+from game.i18n import set_language as _set_language, t
+from game import i18n as _i18n_mod
 
 
 class GameEngine:
@@ -18,7 +20,7 @@ class GameEngine:
         self.state   = "idle"   # idle|combat|story|shop|game_over|victory
         self.player: Optional[Player] = None
         self.floor   = 1
-        self.max_floors = 5
+        self.max_floors = 7
         self.enemy   = None
 
         self.messages:   list[str] = []   # narrative messages since last action
@@ -42,6 +44,8 @@ class GameEngine:
     # ── Public API ─────────────────────────────────────────────────────────────
 
     def new_game(self, name: str, player_class: str) -> dict:
+        if not _i18n_mod._lang:
+            _set_language("en")
         if player_class not in ("Warrior", "Mage", "Rogue"):
             return {"error": f"Unknown class '{player_class}'. Choose Warrior, Mage, or Rogue."}
         self.player = Player(name or "Hero", player_class)
@@ -83,7 +87,7 @@ class GameEngine:
             self._last_enemy_ability = ""
             bonus = self._modifier.get("bonus_msg", "")
             if bonus:
-                self.msg(bonus)
+                self.msg(t(bonus))
             def_bonus = self._modifier.get("player_def_bonus", 0)
             if def_bonus:
                 self.player.apply_bonus(defense=def_bonus)
@@ -114,8 +118,8 @@ class GameEngine:
         if event:
             self._pending_story = event
             self.state = "story"
-            self.msg(f"\n[Story Event] {event.title}")
-            self.msg(event.narrative)
+            self.msg(f"\n[Story Event] {t(event.title)}")
+            self.msg(t(event.narrative))
         else:
             self._open_shop()
 
@@ -262,8 +266,8 @@ class GameEngine:
             ending = self.player.active_ending
             self.msg("\n=== VICTORY ===")
             if ending:
-                self.msg(f"Ending: {ending['title']}")
-                self.msg(ending["description"])
+                self.msg(f"Ending: {t(ending['title'])}")
+                self.msg(t(ending["description"]))
         else:
             self._do_rest_event()
             self._next_enemy()
@@ -278,22 +282,22 @@ class GameEngine:
 
     def _do_rest_event(self):
         events = [
-            ("You find a quiet alcove to rest.",    "hp"),
-            ("You discover a small chest!",          "gold"),
-            ("You meditate briefly.",                "mp"),
-            ("You find a dusty potion.",             "item"),
-            ("You press onward through the dark.",   "none"),
+            ("rest_hp",    "hp"),
+            ("rest_gold",  "gold"),
+            ("rest_mp",    "mp"),
+            ("rest_potion", "item"),
+            ("rest_none",  "none"),
         ]
-        desc, kind = random.choice(events)
-        self.msg(f"\n{desc}")
+        key, kind = random.choice(events)
+        self.msg(f"\n{t(key)}")
         if kind == "hp":
-            h = int(self.player.max_hp * 0.2); self.player.heal(h); self.msg(f"+{h} HP")
+            h = int(self.player.max_hp * 0.2); self.player.heal(h); self.msg(t("gained_hp", n=h))
         elif kind == "gold":
-            g = random.randint(5, 20); self.player.gold += g; self.msg(f"+{g} gold")
+            g = random.randint(5, 20); self.player.gold += g; self.msg(t("gained_gold", n=g))
         elif kind == "mp":
-            r = int(self.player.max_mp * 0.3); self.player.restore_mp(r); self.msg(f"+{r} MP")
+            r = int(self.player.max_mp * 0.3); self.player.restore_mp(r); self.msg(t("gained_mp", n=r))
         elif kind == "item":
-            self.player.inventory.append(ITEMS["health_potion"]); self.msg("Found a Health Potion!")
+            self.player.inventory.append(ITEMS["health_potion"]); self.msg(t("found_potion", name=ITEMS["health_potion"].name))
 
     # ── Story ──────────────────────────────────────────────────────────────────
 
@@ -310,7 +314,7 @@ class GameEngine:
         choice = event.choices[c - 1]
         self.player.story_flags[choice.flag] = True
         apply_effect(self.player, choice.effect)
-        self.msg(choice.outcome)
+        self.msg(t(choice.outcome))
         self._pending_story = None
         self._open_shop()
 
@@ -364,7 +368,7 @@ class GameEngine:
             options.append(f"{item_num+1}: Run")
         elif self.state == "story" and self._pending_story:
             for i, c in enumerate(self._pending_story.choices, 1):
-                options.append(f"{i}: {c.text}")
+                options.append(f"{i}: {t(c.text)}")
         elif self.state == "shop":
             for i, (kind, key, price) in enumerate(self._shop_items, 1):
                 if kind == "item":

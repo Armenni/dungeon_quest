@@ -151,6 +151,7 @@ class Dungeon:
                         return "run"
                     else:
                         self.ui.add_log(f"[red]{t('escape_failed')}[/red]")
+                        self.ui.show_combat(self.player, enemy)
 
             # ── Enemy turn ────────────────────────────────────────────────────
             if not enemy.is_alive():

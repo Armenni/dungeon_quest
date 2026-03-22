@@ -6,7 +6,12 @@ from game.dungeon import Dungeon
 
 def main():
     lang_prompt = "Select language / Selecione o idioma:\n  1. English\n  2. Português (BR)\n> "
-    lang_choice = input(lang_prompt).strip()
+    while True:
+        lang_choice = input(lang_prompt).strip()
+        if lang_choice in ("1", "2"):
+            break
+        print("Invalid choice. Please enter 1 or 2. / Escolha inválida. Digite 1 ou 2.")
+
     if lang_choice == "2":
         set_language("pt_br")
     else:

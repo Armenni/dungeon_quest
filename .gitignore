@@ -1,0 +1,18 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.pytest_cache/
+
+# Tool output — generated files, not source
+tools/*/logs/
+game_state.json
+pending_action.txt
+dragon_log.json
+dragon_output.txt
+gameplay_log.json
+
+# Env
+.env
+venv/
+.venv/
