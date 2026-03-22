@@ -22,7 +22,6 @@ STRINGS: dict = {
     "actions_header": "── Actions ──",
     "action_attack": "Attack",
     "action_use_item": "Use Item",
-    "action_run": "Run",
     "action_prompt": "Action (1-{n}): ",
 
     # Inventory
@@ -68,8 +67,6 @@ STRINGS: dict = {
     "player_attack": "You attack for {dmg} damage!",
     "critical_hit": "CRITICAL HIT!",
     "player_cast": "You cast {name} for {dmg} damage!",
-    "fled": "You fled from battle!",
-    "escape_failed": "You failed to escape!",
     "enemy_stunned": "{name} is stunned — loses its turn!",
     "dark_spirits": "Dark spirits strike {name} for {dmg}!",
     "revive": "The spirits revive you one last time!",
@@ -116,6 +113,11 @@ STRINGS: dict = {
     # Cultist — added by enemy-designer
     "ability_dark_ritual": "[magenta]{name}[/magenta] performs a dark ritual! Heals {heal} HP and gains strength!",
     "ability_shadow_bolt": "[magenta]{name}[/magenta] hurls shadow magic! {dmg} You are [dim]weakened[/dim]!",
+    # Cave Spider — added by enemy-designer
+    "ability_web_trap": "[bold]{name}[/bold] shoots sticky webs! You are [yellow]entangled[/yellow]!",
+    # Stone Golem — added by enemy-designer
+    "ability_rock_slam": "[bold]{name}[/bold] slams the ground! {dmg}",
+    "ability_rock_slam_stun": "[bold]{name}[/bold] slams the ground! You are [yellow]stunned[/yellow]! {dmg}",
     "enemy_basic_attack": "{name} attacks! {dmg}",
 
     # Status effects (status.py)
@@ -138,9 +140,19 @@ STRINGS: dict = {
 
     # Shop (shop.py)
     "shop_leave_cmd": "l",
-    "shop_prompt": "\nBuy (number) or [bold]L[/bold] to leave: ",
+    "shop_sell_cmd":    "s",
+    "shop_buy_cmd":     "b",
+    "shop_prompt": "\nSelect a number to buy, [bold]S[/bold]ell, or [bold]L[/bold]eave: ",
+    "shop_sell_prompt": "\nSelect a number to sell, [bold]B[/bold]uy, or [bold]L[/bold]eave: ",
     "not_enough_gold": "Not enough gold! You have {gold}g.",
     "bought_item": "Bought {name}!",
+    "sell_mode_header": "── What will you sell? ──",
+    "sell_item_line":   "{n}. {name}  →  {price}g",
+    "sell_confirm":     "Sell {name} for {price}g? (y/n): ",
+    "sell_confirm_cmd": "y",
+    "sold_item":        "Sold {name} for {price}g.",
+    "sell_nothing":     "Nothing to sell.",
+    "sell_cancel":      "Kept your items.",
     "press_enter_shopping": "Press Enter to continue shopping...",
     "no_change": "no change",
     "merchant_title": "⚔  Travelling Merchant  ⚔",

@@ -136,16 +136,31 @@ class UI:
         console.print(f"  [cyan]1.[/cyan] {t('action_attack')}")
         for i, spell in enumerate(spells):
             cost = SPELLS[player.player_class][spell]["cost"]
-            console.print(f"  [blue]{i+2}.[/blue] {spell}  [dim](MP: {cost})[/dim]")
+            has_mp = player.mp >= cost
+            if has_mp:
+                console.print(f"  [blue]{i+2}.[/blue] {spell}  [dim](MP: {cost})[/dim]")
+            else:
+                console.print(f"  [dim]{i+2}.[/dim] {spell}  [dim](MP: {cost}) (Not enough MP)[/dim]")
         item_num = 2 + len(spells)
-        run_num  = item_num + 1
         console.print(f"  [green]{item_num}.[/green] {t('action_use_item')}  [dim]({len(player.inventory)})[/dim]")
-        console.print(f"  [yellow]{run_num}.[/yellow] {t('action_run')}")
 
         while True:
-            choice = self.input(t("action_prompt", n=run_num))
-            if choice.isdigit() and 1 <= int(choice) <= run_num:
-                return choice
+            choice = self.input(t("action_prompt", n=item_num))
+            if choice.isdigit():
+                choice_int = int(choice)
+                if choice_int == 1:  # Attack
+                    return choice
+                elif 2 <= choice_int < 2 + len(spells):  # Spell
+                    spell_idx = choice_int - 2
+                    spell = spells[spell_idx]
+                    cost = SPELLS[player.player_class][spell]["cost"]
+                    if player.mp >= cost:
+                        return choice
+                    else:
+                        console.print(f"[red]{t('not_enough_mp')}[/red]")
+                        continue
+                elif choice_int == item_num:  # Items
+                    return choice
             console.print(t("invalid"))
 
     # ── Inventory ──────────────────────────────────────────────────────────────

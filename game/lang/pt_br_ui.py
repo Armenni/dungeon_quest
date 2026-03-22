@@ -22,7 +22,6 @@ STRINGS: dict = {
     "actions_header": "── Ações ──",
     "action_attack": "Atacar",
     "action_use_item": "Usar Item",
-    "action_run": "Fugir",
     "action_prompt": "Ação (1-{n}): ",
 
     # Inventory
@@ -68,8 +67,6 @@ STRINGS: dict = {
     "player_attack": "Você ataca causando {dmg} de dano!",
     "critical_hit": "GOLPE CRÍTICO!",
     "player_cast": "Você lança {name} causando {dmg} de dano!",
-    "fled": "Você fugiu da batalha!",
-    "escape_failed": "Você falhou em escapar!",
     "enemy_stunned": "{name} está atordoado — perde seu turno!",
     "dark_spirits": "Espíritos das trevas atacam {name} causando {dmg}!",
     "revive": "Os espíritos te revivem pela última vez!",
@@ -138,9 +135,19 @@ STRINGS: dict = {
 
     # Shop (shop.py)
     "shop_leave_cmd": "s",
-    "shop_prompt": "\nComprar (número) ou [bold]S[/bold] para sair: ",
+    "shop_sell_cmd":    "v",
+    "shop_buy_cmd":     "c",
+    "shop_prompt": "\nSelecione um número para comprar, [bold]V[/bold]ender, ou [bold]S[/bold]air: ",
+    "shop_sell_prompt": "\nSelecione um número para vender, [bold]C[/bold]omprar, ou [bold]S[/bold]air: ",
     "not_enough_gold": "Ouro insuficiente! Você tem {gold} de ouro.",
     "bought_item": "Comprou {name}!",
+    "sell_mode_header": "── O que você quer vender? ──",
+    "sell_item_line":   "{n}. {name}  →  {price}g",
+    "sell_confirm":     "Vender {name} por {price}g? (s/n): ",
+    "sell_confirm_cmd": "s",
+    "sold_item":        "Vendeu {name} por {price}g.",
+    "sell_nothing":     "Nada para vender.",
+    "sell_cancel":      "Você manteve seus itens.",
     "press_enter_shopping": "Pressione Enter para continuar comprando...",
     "no_change": "sem alteração",
     "merchant_title": "⚔  Mercador Viajante  ⚔",
