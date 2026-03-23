@@ -141,7 +141,6 @@ class GameEngine:
         spells    = list(SPELLS.get(self.player.player_class, {}).keys())
         num_spells = len(spells)
         item_num   = 2 + num_spells
-        run_num    = item_num + 1
 
         # Parse: "3" or "3:2" (use item 2)
         item_sub = None
@@ -153,10 +152,10 @@ class GameEngine:
         try:
             c = int(value)
         except ValueError:
-            self.msg(f"Invalid action. Choose 1-{run_num}.")
+            self.msg(f"Invalid action. Choose 1-{item_num}.")
             return
-        if not (1 <= c <= run_num):
-            self.msg(f"Choose 1-{run_num}.")
+        if not (1 <= c <= item_num):
+            self.msg(f"Choose 1-{item_num}.")
             return
 
         # ── Player turn: DoT tick ──────────────────────────────────────────────
@@ -192,18 +191,6 @@ class GameEngine:
                     if item_sub and item_sub.isdigit():
                         idx = max(0, min(int(item_sub) - 1, len(inv) - 1))
                     self.combat_log.append(self.player.use_item(idx))
-
-            elif c == run_num:
-                if random.random() < 0.5:
-                    self.combat_log.append("You fled from battle!")
-                    for line in self.combat_log:
-                        self.msg(line)
-                    self.combat_log.clear()
-                    self._do_rest_event()
-                    self._next_enemy()
-                    return
-                else:
-                    self.combat_log.append("Failed to escape!")
 
         if not self.enemy.is_alive():
             self._victory_combat()
@@ -315,6 +302,18 @@ class GameEngine:
         self.player.story_flags[choice.flag] = True
         apply_effect(self.player, choice.effect)
         self.msg(t(choice.outcome))
+        # Report what the player gained
+        effect = choice.effect
+        if effect.get("item") and effect["item"] in ITEMS:
+            self.msg(f"You gained: {ITEMS[effect['item']].name}")
+        if effect.get("weapon") and effect["weapon"] in EQUIPMENT:
+            self.msg(f"You gained: {EQUIPMENT[effect['weapon']].name} (weapon)")
+        if effect.get("gold", 0) > 0:
+            self.msg(f"You gained: +{effect['gold']} Gold")
+        stat_map = [("atk", "ATK"), ("defense", "DEF"), ("magic", "MAG"), ("max_hp", "Max HP")]
+        stats = [f"+{effect[k]} {lbl}" for k, lbl in stat_map if effect.get(k, 0) > 0]
+        if stats:
+            self.msg(f"You gained: {', '.join(stats)}")
         self._pending_story = None
         self._open_shop()
 
@@ -346,7 +345,10 @@ class GameEngine:
             self.player.inventory.append(ITEMS[key])
             self.msg(f"Bought {ITEMS[key].name}! ({self.player.gold}g left)")
         else:
-            self.msg(self.player.equip(EQUIPMENT[key]) + f" ({self.player.gold}g left)")
+            msg, old_eq = self.player.equip(EQUIPMENT[key])
+            if old_eq:
+                self.player.inventory.append(old_eq)
+            self.msg(msg + f" ({self.player.gold}g left)")
 
     # ── Response helpers ───────────────────────────────────────────────────────
 
@@ -365,7 +367,6 @@ class GameEngine:
                 cost = SPELLS[self.player.player_class][sp]["cost"]
                 options.append(f"{i+2}: {sp}  (MP:{cost})")
             options.append(f"{item_num}: Use Item  ({len(self.player.inventory)} items)  — add ':N' to pick item")
-            options.append(f"{item_num+1}: Run")
         elif self.state == "story" and self._pending_story:
             for i, c in enumerate(self._pending_story.choices, 1):
                 options.append(f"{i}: {t(c.text)}")

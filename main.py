@@ -2,6 +2,7 @@ from game.i18n import set_language, t
 from game.ui import UI
 from game.player import Player
 from game.dungeon import Dungeon
+from game.save import load_game, delete_save, restore_player
 
 
 def main():
@@ -19,6 +20,24 @@ def main():
 
     ui = UI()
     ui.show_title()
+
+    # Check for existing save
+    save_data = load_game()
+    if save_data:
+        while True:
+            choice = ui.input(t("save_prompt")).strip().lower()
+            if choice == t("save_continue_cmd"):
+                player = restore_player(save_data)
+                floor = save_data["floor"]
+                ui.print(f"[bold cyan]{t('save_loaded', name=player.name)}[/bold cyan]")
+                ui.pause()
+                dungeon = Dungeon(player, ui)
+                dungeon.floor = floor
+                dungeon.run()
+                return
+            elif choice == t("save_new_cmd"):
+                delete_save()
+                break
 
     name = ui.input(t("enter_name"))
     if not name:

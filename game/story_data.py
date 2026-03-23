@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 
 @dataclass
@@ -6,8 +6,13 @@ class Choice:
     text: str
     flag: str
     outcome: str
-    effect: dict   # keys: atk, defense, magic, max_hp, hp, gold, item, weapon
+    effect: dict   # keys: atk, defense, magic, max_hp, hp, gold, item, weapon,
+                   #       strength, intelligence, agility, luck, charisma
     class_only: str = ""  # if set, only shown to this player class
+    # Optional stat check: roll D6 + stat vs TN; on fail apply fail_effect + fail_outcome
+    stat_check: dict = field(default_factory=dict)   # {"stat": "charisma", "tn": 8}
+    fail_outcome: str = ""
+    fail_effect: dict = field(default_factory=dict)
 
 
 @dataclass

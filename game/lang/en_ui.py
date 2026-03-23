@@ -13,7 +13,7 @@ STRINGS: dict = {
 
     # Class selection
     "choose_class": "Choose your class:",
-    "class_warrior_desc": "High HP & Defense. [red]Battlecry[/red] ability.",
+    "class_warrior_desc": "High HP & Defense. [red]Battlecry[/red] — weakens enemies.",
     "class_mage_desc": "High Magic & MP. [blue]Fireball & Ice Shard[/blue].",
     "class_rogue_desc": "High Speed & Crit. [green]Backstab[/green] ability.",
     "enter_class_prompt": "Enter 1, 2, or 3: ",
@@ -22,7 +22,22 @@ STRINGS: dict = {
     "actions_header": "── Actions ──",
     "action_attack": "Attack",
     "action_use_item": "Use Item",
-    "action_prompt": "Action (1-{n}): ",
+    "action_help": "Help",
+    "action_prompt": "Action (1-{n} or ?): ",
+    "help_cmd": "?",
+
+    # Combat help panel
+    "help_title": "Combat Help",
+    "help_actions_header": "── Your Actions ──",
+    "help_attack_desc": "Strike with your weapon. Crit% = 5 + Luck×3. Dodge% = Agility×3.",
+    "help_item_desc": "Use a potion or item from your inventory.",
+    "help_status_header": "── Status Effects ──",
+    "help_status_burn":     "Fire damage each turn until it expires.",
+    "help_status_poison":   "Poison damage each turn until it expires.",
+    "help_status_bleed":    "Bleeds for raw damage each turn, ignoring armor.",
+    "help_status_stun":     "Lose your next turn entirely.",
+    "help_status_weakened": "Your attacks deal reduced damage.",
+    "help_status_shielded": "Absorbs 50% of the next hit you receive.",
 
     # Inventory
     "no_items": "[yellow]No items![/yellow]",
@@ -64,6 +79,7 @@ STRINGS: dict = {
 
     # Combat log
     "player_stunned": "You are stunned — lose your turn!",
+    "player_dodged": "You dodge {name}'s attack!",
     "player_attack": "You attack for {dmg} damage!",
     "critical_hit": "CRITICAL HIT!",
     "player_cast": "You cast {name} for {dmg} damage!",
@@ -88,8 +104,10 @@ STRINGS: dict = {
 
     # Combat (combat.py)
     "not_enough_mp": "Not enough MP!",
+    "battlecry_fx": "Your battle cry weakens the enemy! [dim]Weakened[/dim] for {dur} turns.",
     "frost_armor_fx": "You erect an arcane barrier! [blue]Shielded[/blue] for {dur} turns.",
     "enemy_is_stunned": " Enemy is [yellow]stunned[/yellow]!",
+    "enemy_bleeding": " Enemy is [dark_red]bleeding[/dark_red]!",
     "enemy_affected": " Enemy is [red]{etype}ed[/red]!",
     "take_damage": "You take {dmg} damage!",
     "damage_absorbed": "[{n} absorbed]",
@@ -123,11 +141,56 @@ STRINGS: dict = {
     # Status effects (status.py)
     "status_poison": "Poison",
     "status_burn": "Burn",
+    "status_bleed": "Bleed",
     "status_stun": "Stun",
     "status_weakened": "Weakened",
     "status_shielded": "Shielded",
     "deals_damage": "deals {n} damage!",
     "status_fades": "{name} fades.",
+
+    # Level-up stat choice
+    "level_up_choose_stat": "Choose a stat to raise (+1):",
+    "level_up_stat_strength":     "1. Strength     (ATK +2)",
+    "level_up_stat_intelligence": "2. Intelligence (MAGIC +4)",
+    "level_up_stat_agility":      "3. Agility      (Dodge% +3)",
+    "level_up_stat_luck":         "4. Luck         (Crit% +3)",
+    "level_up_stat_charisma":     "5. Charisma     (Shop -5%)",
+    "level_up_stat_prompt":       "Enter 1-5: ",
+    "level_up_stat_raised":       "[bold]{stat}[/bold] raised to {val}!",
+
+    # Primary stat names
+    "stat_strength":     "Strength",
+    "stat_intelligence": "Intelligence",
+    "stat_agility":      "Agility",
+    "stat_luck":         "Luck",
+    "stat_charisma":     "Charisma",
+
+    # Equip screen
+    "equip_title": "⚔  Equipment  ⚔",
+    "equip_slot_weapon": "Weapon",
+    "equip_slot_armor":  "Armor",
+    "equip_none": "[dim]none[/dim]",
+    "equip_bag_header": "── Bag ──",
+    "equip_bag_empty": "[dim]Empty[/dim]",
+    "equip_prompt": "  [bold]e w/a <n>[/bold] Equip  [bold]u w/a[/bold] Unequip  [bold]d <n>[/bold] Drop  Enter=Done: ",
+    "equip_done_cmd": "",
+    "equip_invalid_cmd": "[red]Usage: e w/a <number>, u w/a, d <number>[/red]",
+    "equip_no_item": "[red]No item at that slot.[/red]",
+    "equip_wrong_slot": "[red]{name} cannot go in that slot.[/red]",
+    "equip_dropped": "Dropped {name}.",
+    "equip_unequipped": "Unequipped {name}.",
+
+    # Shop bag
+    "bought_to_bag": "Bought [bold]{name}[/bold] — added to bag. Equip it between floors.",
+
+    # Save / Load
+    "save_continue": "Continue",
+    "save_new_game": "New Game",
+    "save_prompt": "A save was found. [bold]C[/bold]ontinue or [bold]N[/bold]ew game? ",
+    "save_continue_cmd": "c",
+    "save_new_cmd": "n",
+    "save_loaded": "Game loaded — welcome back, {name}!",
+    "save_saved": "[dim]Game saved.[/dim]",
 
     # Player (player.py)
     "equipped": "Equipped [bold]{name}[/bold]!",

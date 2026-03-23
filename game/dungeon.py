@@ -1,4 +1,5 @@
 import random
+import time
 from dataclasses import replace as _dc_replace
 from game.player import Player
 from game.enemy import get_random_enemy, make_boss_with_modifiers
@@ -7,8 +8,11 @@ from game.combat import (player_attack, player_magic, enemy_turn,
                          player_turn_start, enemy_turn_start, SPELLS)
 from game.status import consume_stun
 from game.items import ITEMS
+from game.equipment import EQUIPMENT
 from game.shop import run_shop
-from game.story import get_event, resolve_ending, apply_effect
+from game.story import get_event, resolve_ending, apply_effect, apply_choice
+from game.flavor import get_flavor, HAS_FLESH
+from game.save import save_game, delete_save
 from game.i18n import t
 
 
@@ -58,14 +62,16 @@ class Dungeon:
                     self._rest_event()
 
             if result == "dead":
+                delete_save()
                 self.ui.show_game_over(self.player)
                 return
 
             if self.floor == self.max_floors:
+                delete_save()
                 self.ui.show_victory(self.player, self.player.active_ending)
                 return
 
-            # Between-floor: story event then shop
+            # Between-floor: story event → equip screen → shop → save
             self.ui.print(f"\n[bold green]{t('floor_cleared', floor=self.floor)}[/bold green]")
 
             # Prisoner return bonus (floor 3, spared on floor 1)
@@ -81,13 +87,29 @@ class Dungeon:
                 idx = self.ui.show_story_event(_dc_replace(event, choices=filtered))
                 choice = filtered[idx]
                 self.player.story_flags[choice.flag] = True
-                apply_effect(self.player, choice.effect)
+                success, roll_info, effect_applied = apply_choice(self.player, choice)
+                if roll_info:
+                    if success:
+                        self.ui.print(f"\n[bold green]✓ {roll_info} — SUCCESS[/bold green]")
+                    else:
+                        self.ui.print(f"\n[bold red]✗ {roll_info} — FAIL[/bold red]")
+                    outcome_key = choice.outcome if success else choice.fail_outcome
+                    if outcome_key:
+                        self.ui.print(f"[italic]{outcome_key}[/italic]")
+                _show_effect_gains(effect_applied, self.ui)
                 self.ui.pause()
+
+            # Equip screen (manage gear from bag)
+            self._equip_screen()
 
             # Shop — stash floor number on player temporarily
             self.player._shop_floor = self.floor
             self.ui.pause(t("shop_hint"))
             run_shop(self.player, self.ui)
+
+            # Auto-save after shop, before descending
+            save_game(self.player, self.floor + 1)
+            self.ui.print(t("save_saved"))
 
             self.ui.pause(t("descend"))
             self.floor += 1
@@ -104,8 +126,17 @@ class Dungeon:
         while self.player.is_alive() and enemy.is_alive():
 
             # ── Player turn ───────────────────────────────────────────────────
+            # Snapshot active DoTs before ticking (for flavor)
+            active_dot = next(
+                (e.etype for e in self.player.status_effects if e.etype in ("burn", "poison")),
+                None
+            )
             for msg, _ in player_turn_start(self.player):
                 self.ui.add_log(msg)
+            if active_dot:
+                flavor = get_flavor(f"status_tick_{active_dot}", True)
+                if flavor:
+                    self.ui.add_log(f"[italic dim]{flavor}[/italic dim]")
 
             if not self.player.is_alive():
                 break
@@ -113,20 +144,24 @@ class Dungeon:
             if consume_stun(self.player):
                 self.ui.add_log(f"[yellow]{t('player_stunned')}[/yellow]")
                 self.ui.show_combat(self.player, enemy)
+                time.sleep(0.5)
             else:
                 self.ui.show_combat(self.player, enemy)
                 choice = self.ui.show_combat_menu(self.player)
 
-                spells    = list(SPELLS.get(self.player.player_class, {}).keys())
+                spells     = list(SPELLS.get(self.player.player_class, {}).keys())
                 num_spells = len(spells)
                 item_num   = 2 + num_spells
-                run_num    = item_num + 1
                 c = int(choice)
 
                 if c == 1:
                     dmg, crit = player_attack(self.player, enemy)
                     crit_txt  = f" [bold yellow]{t('critical_hit')}[/bold yellow]" if crit else ""
                     self.ui.add_log(f"[green]{t('player_attack', dmg=dmg)}{crit_txt}[/green]")
+                    flesh = enemy.name in HAS_FLESH
+                    flavor = get_flavor("enemy_takes_damage", flesh, "normal")
+                    if flavor:
+                        self.ui.add_log(f"[italic dim]{flavor}[/italic dim]")
 
                 elif 2 <= c <= 1 + num_spells:
                     spell_name = spells[c - 2]
@@ -135,6 +170,11 @@ class Dungeon:
                         self.ui.add_log(f"[yellow]{fx}[/yellow]")
                     else:
                         self.ui.add_log(f"[blue]{t('player_cast', name=name, dmg=dmg)}{fx}[/blue]")
+                        flesh = enemy.name in HAS_FLESH
+                        cause = {"Fireball": "fire", "Backstab": "poison"}.get(spell_name, "normal")
+                        flavor = get_flavor("enemy_takes_damage", flesh, cause)
+                        if flavor:
+                            self.ui.add_log(f"[italic dim]{flavor}[/italic dim]")
 
                 elif c == item_num:
                     idx = self.ui.show_inventory(self.player)
@@ -143,15 +183,10 @@ class Dungeon:
                     msg = self.player.use_item(idx)
                     self.ui.add_log(f"[green]{msg}[/green]")
 
-                elif c == run_num:
-                    if random.random() < 0.5:
-                        self.ui.add_log(f"[yellow]{t('fled')}[/yellow]")
-                        self.ui.show_combat(self.player, enemy)
-                        self.ui.pause()
-                        return "run"
-                    else:
-                        self.ui.add_log(f"[red]{t('escape_failed')}[/red]")
-                        self.ui.show_combat(self.player, enemy)
+                # Show state after player action, then pause before enemy turn
+                if enemy.is_alive():
+                    self.ui.show_combat(self.player, enemy)
+                    time.sleep(0.5)
 
             # ── Enemy turn ────────────────────────────────────────────────────
             if not enemy.is_alive():
@@ -172,6 +207,9 @@ class Dungeon:
                 combat_turn += 1
                 if dmg > 0:
                     self.ui.add_log(f"[red]{msg}[/red]")
+                    flavor = get_flavor("player_takes_damage", True)
+                    if flavor:
+                        self.ui.add_log(f"[italic dim]{flavor}[/italic dim]")
                 elif dmg < 0:
                     self.ui.add_log(f"[italic dim]{msg}[/italic dim]")
                 else:
@@ -190,6 +228,26 @@ class Dungeon:
                 self.player.hp = self.player.max_hp // 2
                 self.ui.add_log(f"[bold cyan]{t('revive')}[/bold cyan]")
 
+            # Show state after enemy's turn before looping
+            if self.player.is_alive() and enemy.is_alive():
+                self.ui.show_combat(self.player, enemy)
+                time.sleep(0.5)
+
+        # Add death flavor before final display
+        if not enemy.is_alive() and self.player.is_alive():
+            flesh = enemy.name in HAS_FLESH
+            cause = "normal"
+            for e in enemy.status_effects:
+                if e.etype == "burn":
+                    cause = "fire"
+                    break
+                if e.etype == "poison":
+                    cause = "poison"
+                    break
+            flavor = get_flavor("enemy_death", flesh, cause)
+            if flavor:
+                self.ui.add_log(f"[italic dim]{flavor}[/italic dim]")
+
         # Final display
         self.ui.show_combat(self.player, enemy)
 
@@ -203,6 +261,7 @@ class Dungeon:
                       f"[yellow]{t('xp_gold', xp=enemy.xp, gold=enemy.gold)}[/yellow]")
         if leveled:
             self.ui.print(f"[bold yellow]{t('level_up', level=self.player.level)}[/bold yellow]")
+            self._stat_choice()
 
         # Random drop
         if random.random() < 0.35:
@@ -212,6 +271,121 @@ class Dungeon:
 
         self.ui.pause()
         return "win"
+
+    # ── Level-up stat choice ──────────────────────────────────────────────────
+
+    def _stat_choice(self):
+        from game.player import PRIMARY_STATS
+        stat_keys = list(PRIMARY_STATS)
+        self.ui.print(f"\n[bold cyan]{t('level_up_choose_stat')}[/bold cyan]")
+        for key in ["level_up_stat_strength", "level_up_stat_intelligence",
+                    "level_up_stat_agility", "level_up_stat_luck", "level_up_stat_charisma"]:
+            self.ui.print(f"  {t(key)}")
+        while True:
+            raw = self.ui.input(t("level_up_stat_prompt")).strip()
+            if raw.isdigit() and 1 <= int(raw) <= 5:
+                stat = stat_keys[int(raw) - 1]
+                self.player.apply_stat_up(stat)
+                stat_label = t(f"stat_{stat}")
+                new_val = getattr(self.player, stat)
+                self.ui.print(f"[green]{t('level_up_stat_raised', stat=stat_label, val=new_val)}[/green]")
+                break
+            self.ui.print(t("invalid_choice"))
+
+    # ── Equip screen ──────────────────────────────────────────────────────────
+
+    def _equip_screen(self):
+        """Between-floor equipment management. Skipped if bag is empty."""
+        if not self.player.bag and not self.player.weapon and not self.player.armor:
+            return  # Nothing to manage
+
+        from rich.panel import Panel
+        from game.ui import console
+        from game.equipment import Equipment
+
+        def render():
+            self.ui.clear()
+            lines = []
+            w = self.player.weapon
+            a = self.player.armor
+            lines.append(f"[bold]{t('equip_slot_weapon')}:[/bold] {w.name if w else t('equip_none')} "
+                         f"{'(+'+str(w.atk_bonus)+' ATK)' if w and w.atk_bonus else ''}"
+                         f"{'(+'+str(w.magic_bonus)+' MAG)' if w and w.magic_bonus else ''}")
+            lines.append(f"[bold]{t('equip_slot_armor')}:[/bold]  {a.name if a else t('equip_none')} "
+                         f"{'(+'+str(a.def_bonus)+' DEF)' if a and a.def_bonus else ''}"
+                         f"{'(+'+str(a.hp_bonus)+' HP)' if a and a.hp_bonus else ''}")
+            lines.append("")
+            lines.append(f"[bold]{t('equip_bag_header')}[/bold]")
+            if self.player.bag:
+                for i, eq in enumerate(self.player.bag, 1):
+                    bonuses = []
+                    if eq.atk_bonus:   bonuses.append(f"+{eq.atk_bonus} ATK")
+                    if eq.def_bonus:   bonuses.append(f"+{eq.def_bonus} DEF")
+                    if eq.magic_bonus: bonuses.append(f"+{eq.magic_bonus} MAG")
+                    if eq.hp_bonus:    bonuses.append(f"+{eq.hp_bonus} HP")
+                    bonus_str = "  " + " ".join(bonuses) if bonuses else ""
+                    lines.append(f"  [{i}] [bold]{eq.name}[/bold] ({eq.slot}){bonus_str}")
+            else:
+                lines.append(f"  {t('equip_bag_empty')}")
+            console.print(Panel("\n".join(lines), title=f"[bold]{t('equip_title')}[/bold]",
+                                border_style="cyan"))
+
+        while True:
+            render()
+            raw = self.ui.input(t("equip_prompt")).strip().lower()
+            if raw == "":
+                break
+
+            parts = raw.split()
+            cmd = parts[0] if parts else ""
+
+            # e w/a <n> — equip item from bag into slot
+            if cmd == "e" and len(parts) == 3 and parts[2].isdigit():
+                slot_key = parts[1]
+                slot = "weapon" if slot_key in ("w", "weapon", "a", "arma") else "armor" if slot_key in ("ar", "armor", "armadura") else None
+                if slot is None:
+                    slot = "weapon" if slot_key == "w" else "armor"
+                idx = int(parts[2]) - 1
+                if not (0 <= idx < len(self.player.bag)):
+                    self.ui.print(t("equip_no_item"))
+                    self.ui.pause(t("press_enter_short"))
+                    continue
+                eq = self.player.bag[idx]
+                if eq.slot != slot:
+                    self.ui.print(t("equip_wrong_slot", name=eq.name))
+                    self.ui.pause(t("press_enter_short"))
+                    continue
+                msg, old_eq = self.player.equip(eq)
+                if old_eq:
+                    self.player.bag.append(old_eq)
+                self.ui.print(f"[green]{msg}[/green]")
+                self.ui.pause(t("press_enter_short"))
+
+            # u w/a — unequip slot into bag
+            elif cmd == "u" and len(parts) == 2:
+                slot_key = parts[1]
+                slot = "weapon" if slot_key in ("w", "weapon", "a", "arma") else "armor"
+                name = self.player.unequip(slot)
+                if name:
+                    self.ui.print(f"[yellow]{t('equip_unequipped', name=name)}[/yellow]")
+                else:
+                    self.ui.print(t("equip_no_item"))
+                self.ui.pause(t("press_enter_short"))
+
+            # d <n> — drop item from bag
+            elif cmd == "d" and len(parts) == 2 and parts[1].isdigit():
+                idx = int(parts[1]) - 1
+                if not (0 <= idx < len(self.player.bag)):
+                    self.ui.print(t("equip_no_item"))
+                    self.ui.pause(t("press_enter_short"))
+                    continue
+                dropped = self.player.bag.pop(idx)
+                self.ui.print(f"[dim]{t('equip_dropped', name=dropped.name)}[/dim]")
+                self.ui.pause(t("press_enter_short"))
+
+            else:
+                self.ui.print(t("equip_invalid_cmd"))
+                self.ui.pause(t("press_enter_short"))
 
     # ── Prisoner return bonus ──────────────────────────────────────────────────
 
@@ -223,7 +397,7 @@ class Dungeon:
         self.ui.print(f"[bold cyan]{t('prisoner_gift')}[/bold cyan]")
         self.ui.pause()
 
-    # ── Rest events ────────────────────────────────────────────────────────────
+    # ── Rest events ───────────────────────────────────────────────────────────
 
     def _rest_event(self):
         events = [
@@ -251,3 +425,26 @@ class Dungeon:
         elif kind == "item":
             self.player.inventory.append(ITEMS["health_potion"])
             self.ui.print(f"[green]{t('found_potion', name=ITEMS['health_potion'].name)}[/green]")
+
+
+def _show_effect_gains(effect: dict, ui) -> None:
+    """Print a 'You gained:' line for positive rewards from a story choice."""
+    if not effect:
+        return
+    parts = []
+    if "item" in effect and effect["item"] in ITEMS:
+        parts.append(f"[bold]{ITEMS[effect['item']].name}[/bold]")
+    if "weapon" in effect and effect["weapon"] in EQUIPMENT:
+        parts.append(f"[bold]{EQUIPMENT[effect['weapon']].name}[/bold] (weapon)")
+    if effect.get("gold", 0) > 0:
+        parts.append(f"[yellow]+{effect['gold']} Gold[/yellow]")
+    stat_map = [
+        ("atk", "ATK"), ("defense", "DEF"), ("magic", "MAG"), ("max_hp", "Max HP"),
+        ("strength", "STR"), ("intelligence", "INT"), ("agility", "AGI"),
+        ("luck", "LUK"), ("charisma", "CHA"),
+    ]
+    stats = [f"+{effect[k]} {lbl}" for k, lbl in stat_map if effect.get(k, 0) > 0]
+    if stats:
+        parts.append(f"[green]{', '.join(stats)}[/green]")
+    if parts:
+        ui.print(f"\n[bold cyan]You gained:[/bold cyan] {' | '.join(parts)}")

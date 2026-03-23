@@ -25,6 +25,8 @@ Both call the same `combat.py`, `story_logic.py`, `player.py`, `status.py`.
 ## File Map
 
 ```
+GAMEDATA.md           Quick-reference for all game stats, formulas, enemies, items, endings — read before designing content
+
 game/
   i18n.py             set_language() merges {lang}_ui + {lang}_story dicts; t(key, **kwargs)
   lang/
@@ -139,7 +141,7 @@ See memory files for the full iteration plan. Current target: **v0.1 — A Riche
 | Version | Theme | Key addition |
 |---|---|---|
 | v0.1 | A Richer Dungeon | Alternate events, more enemies, new ending |
-| v0.2 | It Remembers You | Persistence, save/load, first companion (prisoner) |
+| v0.2 | It Remembers You | Save/load, 5-stat system (STR/INT/AGI/LUK/CHA), equip screen, D6 stat checks |
 | v0.3 | The Refuge | Overworld loop, base screen, 3-node map |
 | v0.4 | Something to Grind | Goblin Warrens dungeon, companion skill growth |
 | v0.5 | Earn the Dragon | Cultist Camp, Cult Leader mini-boss, Dragon locked |

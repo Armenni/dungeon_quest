@@ -44,6 +44,10 @@ def make_enemy(name: str, floor: int) -> Enemy:
                       ["attack", "drain_mana", "life_steal"]),
         "Cultist":   (int(50*s), int(11*s), int(5*s),  11, int(32*s), int(11*s),
                       ["attack", "dark_ritual", "shadow_bolt"]),
+        "Cave Spider": (int(28*s), int(9*s),  int(2*s),  13, int(18*s), int(5*s),
+                      ["attack", "poison_sting", "web_trap"]),
+        "Stone Golem": (int(90*s), int(13*s), int(12*s), 4,  int(40*s), int(14*s),
+                      ["attack", "rock_slam", "regenerate"]),
         "Dragon":    (int(220*s),int(24*s), 18,        8,  200,       50,
                       ["attack", "fire_breath", "tail_swipe", "toxic_breath",
                        "wing_stun", "regenerate"]),
@@ -64,10 +68,10 @@ def make_boss_with_modifiers(floor: int, modifier: dict) -> Enemy:
 
 
 FLOOR_ENEMIES: dict[int, list[str]] = {
-    1: ["Goblin", "Goblin", "Skeleton"],
-    2: ["Goblin", "Orc", "Skeleton"],
-    3: ["Orc", "Skeleton", "Dark Mage", "Wraith"],
-    4: ["Orc", "Dark Mage", "Troll", "Wraith"],
+    1: ["Goblin", "Goblin", "Skeleton", "Cave Spider"],
+    2: ["Goblin", "Orc", "Skeleton", "Cave Spider"],
+    3: ["Orc", "Skeleton", "Dark Mage", "Wraith", "Stone Golem"],
+    4: ["Orc", "Dark Mage", "Troll", "Wraith", "Stone Golem"],
     5: ["Dark Mage", "Troll", "Wraith", "Cultist"],
     6: ["Troll", "Dark Mage", "Cultist"],
     7: ["Dragon"],

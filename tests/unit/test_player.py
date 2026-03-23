@@ -50,28 +50,31 @@ class TestPlayerLeveling:
         assert warrior.level == 2
 
     def test_level_up_increases_stats(self, warrior):
-        """Level-up should increase all stats."""
-        initial_atk = warrior.atk
+        """Level-up should increase DEF, HP, and set pending stat choice."""
         initial_def = warrior.defense
-        initial_magic = warrior.magic
         initial_hp = warrior.max_hp
 
         warrior.gain_xp(50)
 
-        assert warrior.atk > initial_atk
         assert warrior.defense > initial_def
-        assert warrior.magic > initial_magic
         assert warrior.max_hp > initial_hp
+        # ATK/MAGIC require explicit stat choice (pending_stat_choice flag)
+        assert warrior.pending_stat_choice is True
 
     def test_level_up_stat_growth_amounts(self, warrior):
-        """Level-up should grow stats by expected amounts."""
-        # From constants: ATK +3, DEF +2, MAGIC +2, MAX_HP +15
+        """Level-up should grow DEF and HP by expected amounts; pending stat choice for primaries."""
         warrior.gain_xp(50)
 
-        assert warrior._base_atk == 15 + 3  # Warrior starts with 15
-        assert warrior._base_defense == 12 + 2  # Starts with 12
-        assert warrior._base_magic == 5 + 2  # Starts with 5
-        assert warrior._base_max_hp == 120 + 15  # Starts with 120
+        # DEF +1, HP +10 per level-up (flat gains); ATK/MAGIC grow via stat choice
+        assert warrior._base_defense == 12 + 1
+        assert warrior._base_max_hp == 120 + 10
+        assert warrior.pending_stat_choice is True
+
+        # Applying a stat choice updates the derived ATK
+        atk_before = warrior.atk
+        warrior.apply_stat_up("strength")
+        assert warrior.atk > atk_before
+        assert warrior.pending_stat_choice is False
 
     def test_level_up_heals_player(self, warrior):
         """Level-up should restore HP to max."""
@@ -118,33 +121,34 @@ class TestPlayerEquipment:
         assert warrior.defense == initial_def + vest.def_bonus
 
     def test_equip_multiple_items_stack_bonuses(self, warrior):
-        """Multiple equipped items should stack bonuses."""
+        """Multiple equipped items should stack bonuses on top of derived base."""
         sword = EQUIPMENT["iron_sword"]
         vest = EQUIPMENT["padded_vest"]
+        base_atk = warrior.atk  # capture before equipping
+        base_def = warrior.defense
 
         warrior.equip(sword)
         warrior.equip(vest)
 
-        expected_atk = warrior._base_atk + sword.atk_bonus + vest.atk_bonus
-        expected_def = warrior._base_defense + sword.def_bonus + vest.def_bonus
-
-        assert warrior.atk == expected_atk
-        assert warrior.defense == expected_def
+        assert warrior.atk == base_atk + sword.atk_bonus + vest.atk_bonus
+        assert warrior.defense == base_def + sword.def_bonus + vest.def_bonus
 
     def test_equip_replaces_same_slot(self, warrior):
         """Equipping item in same slot should replace it."""
         sword1 = EQUIPMENT["iron_sword"]
         sword2 = EQUIPMENT["steel_sword"]
 
-        warrior.equip(sword1)
+        msg1, old1 = warrior.equip(sword1)
+        assert old1 is None  # First equip, no old equipment
         atk_with_sword1 = warrior.atk
 
-        warrior.equip(sword2)
+        msg2, old2 = warrior.equip(sword2)
         atk_with_sword2 = warrior.atk
 
         # Sword2 is better (atk_bonus=8 vs 4)
         assert atk_with_sword2 > atk_with_sword1
         assert warrior.weapon == sword2
+        assert old2 == sword1  # Old sword should be returned
 
     def test_equip_increases_max_hp(self, warrior):
         """Some equipment increases max HP."""
@@ -237,9 +241,20 @@ class TestPlayerResources:
 
     def test_apply_bonus_increases_stats(self, warrior):
         """apply_bonus should increase base stats permanently."""
+        atk_before = warrior.atk
+        def_before = warrior.defense
+        magic_before = warrior.magic
+        hp_before = warrior.max_hp
+
         warrior.apply_bonus(atk=5, defense=3, magic=2, max_hp=20)
 
-        assert warrior._base_atk == 15 + 5
+        # Legacy atk/magic add to flat offsets (_base_atk/_base_magic)
+        assert warrior._base_atk == 5       # starts at 0, +5
+        assert warrior._base_magic == 2     # starts at 0, +2
         assert warrior._base_defense == 12 + 3
-        assert warrior._base_magic == 5 + 2
         assert warrior._base_max_hp == 120 + 20
+        # Effective stats should have grown
+        assert warrior.atk > atk_before
+        assert warrior.defense > def_before
+        assert warrior.magic > magic_before
+        assert warrior.max_hp > hp_before

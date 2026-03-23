@@ -1,5 +1,5 @@
 import random
-from typing import Optional
+from typing import Optional, Tuple
 from game.story_data import StoryEvent, EVENTS, ENDINGS, _SCORES
 
 
@@ -16,6 +16,30 @@ def resolve_ending(flags: dict[str, bool]) -> dict:
 def get_event(floor_after: int) -> Optional[StoryEvent]:
     matches = [e for e in EVENTS if e.floor_after == floor_after]
     return random.choice(matches) if matches else None
+
+
+def apply_choice(player, choice) -> Tuple[bool, str, Optional[dict]]:
+    """
+    Apply a Choice, including stat check if defined.
+
+    Returns (success, roll_info_str, effect_applied).
+    roll_info_str is non-empty only when a stat check was rolled.
+    """
+    if choice.stat_check:
+        stat = choice.stat_check["stat"]
+        tn   = choice.stat_check["tn"]
+        stat_val = getattr(player, stat, 0)
+        roll = random.randint(1, 6)
+        total = roll + stat_val
+        roll_info = f"D6({roll}) + {stat.capitalize()}({stat_val}) = {total} vs TN {tn}"
+        if total < tn:
+            apply_effect(player, choice.fail_effect)
+            return False, roll_info, choice.fail_effect
+        apply_effect(player, choice.effect)
+        return True, roll_info, choice.effect
+
+    apply_effect(player, choice.effect)
+    return True, "", choice.effect
 
 
 def apply_effect(player, effect: dict):
@@ -38,6 +62,11 @@ def apply_effect(player, effect: dict):
         magic=effect.get("magic", 0),
         max_hp=effect.get("max_hp", 0),
         hp=effect.get("hp", 0),
+        strength=effect.get("strength", 0),
+        intelligence=effect.get("intelligence", 0),
+        agility=effect.get("agility", 0),
+        luck=effect.get("luck", 0),
+        charisma=effect.get("charisma", 0),
     )
     if "gold" in effect:
         player.gold += effect["gold"]
@@ -48,4 +77,6 @@ def apply_effect(player, effect: dict):
     if "weapon" in effect:
         key = effect["weapon"]
         if key in EQUIPMENT:
-            player.equip(EQUIPMENT[key])
+            msg, old_eq = player.equip(EQUIPMENT[key])
+            if old_eq:
+                player.inventory.append(old_eq)

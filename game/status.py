@@ -6,7 +6,7 @@ from game.i18n import t
 @dataclass
 class StatusEffect:
     name: str       # display name
-    etype: str      # "poison" | "burn" | "stun" | "weakened"
+    etype: str      # "poison" | "burn" | "bleed" | "stun" | "weakened"
     duration: int   # turns remaining
     magnitude: int  # damage per tick, or potency
 
@@ -14,6 +14,7 @@ class StatusEffect:
 EFFECT_COLORS: dict[str, str] = {
     "poison":   "green",
     "burn":     "red",
+    "bleed":    "dark_red",
     "stun":     "yellow",
     "weakened": "dim",
     "shielded": "blue",
@@ -44,7 +45,7 @@ def tick_statuses(target) -> List[Tuple[str, int]]:
         if e.etype == "stun":
             keep.append(e)   # stun duration managed exclusively by consume_stun
             continue
-        if e.etype in ("poison", "burn"):
+        if e.etype in ("poison", "burn", "bleed"):
             target.hp = max(0, target.hp - e.magnitude)
             results.append((f"[{c}]{e.name}[/{c}] {t('deals_damage', n=e.magnitude)}", e.magnitude))
         e.duration -= 1      # weakened and DoTs tick down here

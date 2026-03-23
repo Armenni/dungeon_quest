@@ -6,12 +6,14 @@ from game.status import apply_status, tick_statuses, consume_stun, weakened_pena
 from game.i18n import t
 
 
-# Spells: class -> name -> {cost, dmg_mult, desc, side_effect?, targets_self?}
+# Spells: class -> name -> {cost, dmg_mult, desc, side_effect?, targets_self?, debuff_only?}
 # side_effect: (etype, duration, magnitude)
 # targets_self: if True, the spell buffs/shields the player instead of damaging the enemy
+# debuff_only: if True, no damage — applies side_effect directly to enemy
 SPELLS: dict[str, dict] = {
     "Warrior": {
-        "Battlecry": {"cost": 10, "dmg_mult": 1.8, "desc": "A mighty war cry strike"},
+        "Battlecry": {"cost": 10, "dmg_mult": 0, "desc": "A war cry that weakens the enemy",
+                      "side_effect": ("weakened", 3, 4), "debuff_only": True},
     },
     "Mage": {
         "Fireball":    {"cost": 15, "dmg_mult": 2.0, "desc": "A ball of roaring fire",
@@ -23,7 +25,7 @@ SPELLS: dict[str, dict] = {
     },
     "Rogue": {
         "Backstab": {"cost": 12, "dmg_mult": 2.2, "desc": "Strike from the shadows",
-                     "side_effect": ("weakened", 2, 4)},
+                     "side_effect": ("bleed", 3, 5)},
     },
 }
 
@@ -39,7 +41,7 @@ def enemy_turn_start(enemy: Enemy) -> List[Tuple[str, int]]:
 
 
 def player_attack(player: Player, enemy: Enemy) -> Tuple[int, bool]:
-    crit = random.random() < (0.2 if player.player_class == "Rogue" else 0.1)
+    crit = random.random() < player.crit_chance
     penalty = weakened_penalty(player)
     effective_atk = max(1, player.atk - penalty)
     dmg = effective_atk + random.randint(-2, 4)
@@ -68,6 +70,14 @@ def player_magic(player: Player, enemy: Enemy, spell_name: str,
             fx_msg = t("frost_armor_fx", dur=dur)
         return 0, spell_name, fx_msg
 
+    if spell.get("debuff_only"):
+        fx_msg = ""
+        if "side_effect" in spell:
+            etype, dur, mag = spell["side_effect"]
+            apply_status(enemy, etype, dur, mag)
+            fx_msg = t("battlecry_fx", dur=dur)
+        return 0, spell_name, fx_msg
+
     dmg = int(player.magic * magic_mult * spell["dmg_mult"]) + random.randint(-3, 5)
     actual = enemy.take_damage(dmg)
 
@@ -78,6 +88,9 @@ def player_magic(player: Player, enemy: Enemy, spell_name: str,
             if random.random() < 0.5:
                 apply_status(enemy, etype, dur, mag)
                 fx_msg = t("enemy_is_stunned")
+        elif etype == "bleed":
+            apply_status(enemy, etype, dur, mag)
+            fx_msg = t("enemy_bleeding")
         else:
             apply_status(enemy, etype, dur, mag)
             fx_msg = t("enemy_affected", etype=etype)
@@ -201,6 +214,20 @@ def _ability_shadow_bolt(enemy: Enemy, player: Player) -> Tuple[int, str]:
     return actual, t("ability_shadow_bolt", name=enemy.name, dmg=dmg_str)
 
 
+def _ability_web_trap(enemy: Enemy, player: Player) -> Tuple[int, str]:
+    apply_status(player, "stun", 1, 0)
+    return 0, t("ability_web_trap", name=enemy.name)
+
+
+def _ability_rock_slam(enemy: Enemy, player: Player) -> Tuple[int, str]:
+    raw = int(enemy.atk * 1.6) + random.randint(0, 4)
+    actual, dmg_str = _hit(player, raw)
+    if random.random() < 0.5:
+        apply_status(player, "stun", 1, 0)
+        return actual, t("ability_rock_slam_stun", name=enemy.name, dmg=dmg_str)
+    return actual, t("ability_rock_slam", name=enemy.name, dmg=dmg_str)
+
+
 _ABILITY_HANDLERS: dict[str, callable] = {
     "heavy_strike": _ability_heavy_strike,
     "bone_throw": _ability_bone_throw,
@@ -217,6 +244,8 @@ _ABILITY_HANDLERS: dict[str, callable] = {
     "life_steal": _ability_life_steal,
     "dark_ritual": _ability_dark_ritual,
     "shadow_bolt": _ability_shadow_bolt,
+    "web_trap": _ability_web_trap,
+    "rock_slam": _ability_rock_slam,
     "attack": _ability_basic_attack,
 }
 
@@ -228,6 +257,7 @@ def enemy_turn(enemy: Enemy, player: Player,
     Damage messages include DEF absorption info.
     wing_stun is suppressed on turn 0 (first action) — players deserve one free attack.
     The same ability cannot fire twice in a row.
+    Agility gives a chance to dodge the entire attack.
     """
     available = list(enemy.abilities)
     if turn_count == 0 and "wing_stun" in available and len(available) > 1:
@@ -235,6 +265,11 @@ def enemy_turn(enemy: Enemy, player: Player,
     if last_ability in available and len(available) > 1:
         available.remove(last_ability)
     ability = random.choice(available)
+
+    # Dodge check — regenerate/drain abilities cannot be dodged
+    if ability not in ("regenerate", "dark_ritual", "drain_mana", "curse"):
+        if random.random() < player.dodge_chance:
+            return 0, t("player_dodged", name=enemy.name), ability
 
     handler = _ABILITY_HANDLERS.get(ability, _ability_basic_attack)
     actual, msg = handler(enemy, player)

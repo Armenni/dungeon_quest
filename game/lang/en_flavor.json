@@ -1,0 +1,143 @@
+{
+  "enemy_takes_damage": {
+    "fire": {
+      "true":  [
+        "It recoils, scorched.",
+        "It howls as the flames bite into its skin.",
+        "The fire finds purchase and the creature screams.",
+        "Smoke rises from its burning flesh.",
+        "It writhes, clothes and skin alike igniting."
+      ],
+      "false": [
+        "Fire washes over it, leaving char marks.",
+        "The heat cracks its surface.",
+        "Flames lick across it, doing what they can.",
+        "It glows faintly where the fire struck.",
+        "The blaze scorches stone and bone alike."
+      ]
+    },
+    "poison": {
+      "true":  [
+        "It staggers, veins darkening beneath the skin.",
+        "Green foam flecks its lips.",
+        "It convulses, retching.",
+        "The toxin spreads visibly through its flesh.",
+        "It claws at itself as the venom burns within."
+      ],
+      "false": [
+        "The venom pools uselessly at its feet.",
+        "Poison drips off it, finding no purchase.",
+        "It seems irritated but unbothered by the toxin.",
+        "The poison corrodes the surface slowly.",
+        "Venom beads and falls — its kind feels little."
+      ]
+    },
+    "normal": {
+      "true":  [
+        "It snarls and bleeds.",
+        "Flesh tears under the blow.",
+        "It lets out a guttural grunt of pain.",
+        "Blood darkens the dungeon floor.",
+        "It recoils, wounded but furious."
+      ],
+      "false": [
+        "Your blow cracks hard against it.",
+        "Splinters of bone scatter across the floor.",
+        "Metal scrapes on stone — it registers the impact.",
+        "It shudders from the force.",
+        "The strike lands with a hollow ring."
+      ]
+    }
+  },
+  "player_takes_damage": [
+    "The hit staggers you back a step.",
+    "Pain flares hot through your side.",
+    "You grit your teeth and absorb the blow.",
+    "That one is going to leave a mark.",
+    "Stars dance at the edge of your vision.",
+    "Your legs nearly buckle.",
+    "You bite back a cry and hold your ground."
+  ],
+  "status_tick_burn": {
+    "true":  [
+      "Your flesh smolders — the agony is relentless.",
+      "The burn spreads across your skin like liquid fire.",
+      "You can smell your own hair singeing.",
+      "The flames refuse to die — they find new fuel in your skin.",
+      "You clench your jaw as fire eats into you."
+    ],
+    "false": [
+      "Flames cling to your armor, finding every gap.",
+      "The heat is unrelenting — even metal conducts it.",
+      "You fight through the searing pain.",
+      "The fire hasn't finished with you yet.",
+      "Every breath draws in hot, scorched air."
+    ]
+  },
+  "status_tick_poison": {
+    "true":  [
+      "The toxin courses through your veins like ice.",
+      "Your stomach lurches — the venom spreads.",
+      "Cold weakness seeps outward from the wound.",
+      "Your vision blurs at the edges.",
+      "The poison does its slow, patient work."
+    ],
+    "false": [
+      "The venom finds its way into every crack.",
+      "You feel the poison eating quietly at you.",
+      "Weakness seeps into your limbs from within.",
+      "The toxin is patient — and thorough.",
+      "Each moment the venom makes itself more known."
+    ]
+  },
+  "enemy_death": {
+    "fire": {
+      "true":  [
+        "It collapses, still burning.",
+        "The flames finish what you started.",
+        "Ash and smoke drift where it stood.",
+        "The fire consumes the last of its strength.",
+        "It falls — the fire doesn't stop."
+      ],
+      "false": [
+        "Fire consumes whatever holds it together.",
+        "It glows a hellish orange, then goes dark.",
+        "Stone cracks and crumbles in the heat.",
+        "What held it upright finally gives way.",
+        "The blaze takes the last of it."
+      ]
+    },
+    "poison": {
+      "true":  [
+        "It shudders once and goes still.",
+        "The poison takes its toll at last.",
+        "It slumps, eyes glassy and empty.",
+        "The venom wins — the body follows.",
+        "It collapses, body finally surrendering to the toxin."
+      ],
+      "false": [
+        "The toxin seeps into every last crack.",
+        "It finally stops moving.",
+        "Silence. The poison gets its way.",
+        "Whatever animates it can no longer resist the venom.",
+        "It crumbles — the poison had the last word."
+      ]
+    },
+    "normal": {
+      "true":  [
+        "It falls and does not rise.",
+        "The light leaves its eyes.",
+        "It crumples to the dungeon floor.",
+        "With a final breath, it is still.",
+        "The fight goes out of it all at once."
+      ],
+      "false": [
+        "It shatters into fragments.",
+        "The last piece of it stills.",
+        "Nothing remains but rubble and dust.",
+        "It collapses into itself with a grinding crash.",
+        "Whatever force sustained it is gone."
+      ]
+    }
+  }
+}

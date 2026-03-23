@@ -143,9 +143,13 @@ class UI:
                 console.print(f"  [dim]{i+2}.[/dim] {spell}  [dim](MP: {cost}) (Not enough MP)[/dim]")
         item_num = 2 + len(spells)
         console.print(f"  [green]{item_num}.[/green] {t('action_use_item')}  [dim]({len(player.inventory)})[/dim]")
+        console.print(f"  [dim]{t('help_cmd')} {t('action_help')}[/dim]")
 
         while True:
             choice = self.input(t("action_prompt", n=item_num))
+            if choice == t("help_cmd"):
+                self.show_combat_help(player)
+                continue
             if choice.isdigit():
                 choice_int = int(choice)
                 if choice_int == 1:  # Attack
@@ -162,6 +166,52 @@ class UI:
                 elif choice_int == item_num:  # Items
                     return choice
             console.print(t("invalid"))
+
+    def show_combat_help(self, player):
+        from game.combat import SPELLS
+
+        lines = [f"[bold yellow]{t('help_actions_header')}[/bold yellow]"]
+        lines.append(f"  [cyan]Attack[/cyan]    {t('help_attack_desc')}")
+
+        for spell_name, data in SPELLS.get(player.player_class, {}).items():
+            cost = data["cost"]
+            desc = data["desc"]
+            fx = ""
+            if "side_effect" in data:
+                etype, dur, mag = data["side_effect"]
+                if data.get("targets_self"):
+                    fx = f"  [italic dim]→ {etype} for {dur}t[/italic dim]"
+                elif mag > 0:
+                    fx = f"  [italic dim]→ causes {etype} {dur}t/{mag}dmg[/italic dim]"
+                else:
+                    fx = f"  [italic dim]→ causes {etype}[/italic dim]"
+            lines.append(
+                f"  [blue]{spell_name}[/blue]  [dim](MP:{cost})[/dim]  {desc}{fx}"
+            )
+
+        lines.append(
+            f"  [green]{t('action_use_item')}[/green]    {t('help_item_desc')}"
+        )
+        lines.append("")
+        lines.append(f"[bold yellow]{t('help_status_header')}[/bold yellow]")
+
+        status_rows = [
+            ("Burn",     "red",     t("help_status_burn")),
+            ("Poison",   "green",   t("help_status_poison")),
+            ("Stun",     "yellow",  t("help_status_stun")),
+            ("Weakened", "dim",     t("help_status_weakened")),
+            ("Shielded", "blue",    t("help_status_shielded")),
+        ]
+        for name, color, desc in status_rows:
+            lines.append(f"  [{color}]{name:<10}[/{color}] {desc}")
+
+        console.print(Panel(
+            "\n".join(lines),
+            title=f"[bold]{t('help_title')}[/bold]",
+            border_style="dim",
+            padding=(1, 2),
+        ))
+        self.input(t("press_enter_short"))
 
     # ── Inventory ──────────────────────────────────────────────────────────────
 

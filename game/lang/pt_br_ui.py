@@ -22,7 +22,21 @@ STRINGS: dict = {
     "actions_header": "── Ações ──",
     "action_attack": "Atacar",
     "action_use_item": "Usar Item",
-    "action_prompt": "Ação (1-{n}): ",
+    "action_help": "Ajuda",
+    "action_prompt": "Ação (1-{n} ou ?): ",
+    "help_cmd": "?",
+
+    # Combat help panel
+    "help_title": "Ajuda de Combate",
+    "help_actions_header": "── Suas Ações ──",
+    "help_attack_desc": "Ataque com sua arma. Rogues acertam crítico 20%, outros 10%.",
+    "help_item_desc": "Use uma poção ou item do seu inventário.",
+    "help_status_header": "── Efeitos de Status ──",
+    "help_status_burn":     "Dano de fogo a cada turno até expirar.",
+    "help_status_poison":   "Dano de veneno a cada turno até expirar.",
+    "help_status_stun":     "Perde seu próximo turno completamente.",
+    "help_status_weakened": "Seus ataques causam menos dano.",
+    "help_status_shielded": "Absorve 50% do próximo golpe recebido.",
 
     # Inventory
     "no_items": "[yellow]Sem itens![/yellow]",
@@ -64,6 +78,7 @@ STRINGS: dict = {
 
     # Combat log
     "player_stunned": "Você está atordoado — perde seu turno!",
+    "player_dodged": "Você esquiva do ataque de {name}!",
     "player_attack": "Você ataca causando {dmg} de dano!",
     "critical_hit": "GOLPE CRÍTICO!",
     "player_cast": "Você lança {name} causando {dmg} de dano!",
@@ -88,8 +103,10 @@ STRINGS: dict = {
 
     # Combat (combat.py)
     "not_enough_mp": "MP insuficiente!",
+    "battlecry_fx": "Seu grito de guerra enfraquece o inimigo! [dim]Enfraquecido[/dim] por {dur} turnos.",
     "frost_armor_fx": "Você ergue uma barreira arcana! [blue]Escudado[/blue] por {dur} turnos.",
     "enemy_is_stunned": " O inimigo está [yellow]atordoado[/yellow]!",
+    "enemy_bleeding": " O inimigo está [dark_red]sangrando[/dark_red]!",
     "enemy_affected": " O inimigo está [red]{etype}[/red]!",
     "take_damage": "Você recebe {dmg} de dano!",
     "damage_absorbed": "[{n} absorvido]",
@@ -118,11 +135,56 @@ STRINGS: dict = {
     # Status effects (status.py)
     "status_poison": "Veneno",
     "status_burn": "Queimadura",
+    "status_bleed": "Sangramento",
     "status_stun": "Atordoamento",
     "status_weakened": "Enfraquecido",
     "status_shielded": "Escudado",
     "deals_damage": "causa {n} de dano!",
     "status_fades": "{name} desaparece.",
+
+    # Level-up stat choice
+    "level_up_choose_stat": "Escolha um atributo para aumentar (+1):",
+    "level_up_stat_strength":     "1. Força        (ATQ +2)",
+    "level_up_stat_intelligence": "2. Inteligência (MAG +4)",
+    "level_up_stat_agility":      "3. Agilidade    (Esquiva% +3)",
+    "level_up_stat_luck":         "4. Sorte        (Crítico% +3)",
+    "level_up_stat_charisma":     "5. Carisma      (Loja -5%)",
+    "level_up_stat_prompt":       "Digite 1-5: ",
+    "level_up_stat_raised":       "[bold]{stat}[/bold] aumentou para {val}!",
+
+    # Primary stat names
+    "stat_strength":     "Força",
+    "stat_intelligence": "Inteligência",
+    "stat_agility":      "Agilidade",
+    "stat_luck":         "Sorte",
+    "stat_charisma":     "Carisma",
+
+    # Equip screen
+    "equip_title": "⚔  Equipamentos  ⚔",
+    "equip_slot_weapon": "Arma",
+    "equip_slot_armor":  "Armadura",
+    "equip_none": "[dim]nenhum[/dim]",
+    "equip_bag_header": "── Bolsa ──",
+    "equip_bag_empty": "[dim]Vazia[/dim]",
+    "equip_prompt": "  [bold]e a/ar <n>[/bold] Equipar  [bold]u a/ar[/bold] Desequipar  [bold]d <n>[/bold] Descartar  Enter=Pronto: ",
+    "equip_done_cmd": "",
+    "equip_invalid_cmd": "[red]Uso: e a/ar <número>, u a/ar, d <número>[/red]",
+    "equip_no_item": "[red]Nenhum item nesse slot.[/red]",
+    "equip_wrong_slot": "[red]{name} não pode ir nesse slot.[/red]",
+    "equip_dropped": "Descartou {name}.",
+    "equip_unequipped": "Desequipou {name}.",
+
+    # Shop bag
+    "bought_to_bag": "Comprou [bold]{name}[/bold] — adicionado à bolsa. Equipe entre andares.",
+
+    # Save / Load
+    "save_continue": "Continuar",
+    "save_new_game": "Novo Jogo",
+    "save_prompt": "Progresso encontrado. [bold]C[/bold]ontinuar ou [bold]N[/bold]ovo jogo? ",
+    "save_continue_cmd": "c",
+    "save_new_cmd": "n",
+    "save_loaded": "Jogo carregado — bem-vindo de volta, {name}!",
+    "save_saved": "[dim]Jogo salvo.[/dim]",
 
     # Player (player.py)
     "equipped": "Equipado [bold]{name}[/bold]!",

@@ -102,7 +102,7 @@ def _ask_claude(state: dict) -> dict:
     prompt = _SYSTEM + "\n\n" + _format_state(state)
     try:
         result = subprocess.run(
-            ["claude", "-p", prompt],
+            ["claude", "-p", prompt, "--model", "claude-haiku-4-5-20251001"],
             capture_output=True, text=True, timeout=90,
         )
         raw = result.stdout.strip()
